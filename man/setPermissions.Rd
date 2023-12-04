@@ -6,8 +6,8 @@
 \usage{
 setPermissions(
   project,
-  owners,
-  uploaders,
+  owners = NULL,
+  uploaders = NULL,
   append = TRUE,
   url = restUrl(),
   token = accessToken()
@@ -17,11 +17,11 @@ setPermissions(
 \item{project}{String containing the project name.}
 
 \item{owners}{Character vector containing the GitHub users or organizations that are owners of this project.
-If missing, no change is made to the existing owners of the project.}
+If \code{NULL}, no change is made to the existing owners of the project.}
 
 \item{uploaders}{List specifying the authorized uploaders for this project.
 See the \code{uploaders} field in the \code{\link{fetchPermissions}} return value for the expected format. 
-If missing, no change is made to the existing uploaders of the project.}
+If \code{NULL}, no change is made to the existing uploaders of the project.}
 
 \item{append}{Logical scalar indicating whether \code{owners} and \code{uploaders} should be appended to the existing owners and uploaders, respectively, of the project.
 If \code{FALSE}, the \code{owners} and \code{uploaders} are used to replace the existing values.}

@@ -4,10 +4,10 @@
 #'
 #' @param project String containing the project name.
 #' @param owners Character vector containing the GitHub users or organizations that are owners of this project.
-#' If missing, no change is made to the existing owners of the project.
+#' If \code{NULL}, no change is made to the existing owners of the project.
 #' @param uploaders List specifying the authorized uploaders for this project.
 #' See the \code{uploaders} field in the \code{\link{fetchPermissions}} return value for the expected format. 
-#' If missing, no change is made to the existing uploaders of the project.
+#' If \code{NULL}, no change is made to the existing uploaders of the project.
 #' @param append Logical scalar indicating whether \code{owners} and \code{uploaders} should be appended to the existing owners and uploaders, respectively, of the project.
 #' If \code{FALSE}, the \code{owners} and \code{uploaders} are used to replace the existing values.
 #' @param url String containing the URL of the gypsum REST API.
@@ -34,7 +34,7 @@
 #' }
 #'
 #' @export
-setPermissions <- function(project, owners, uploaders, append=TRUE, url=restUrl(), token=accessToken()) {
+setPermissions <- function(project, owners=NULL, uploaders=NULL, append=TRUE, url=restUrl(), token=accessToken()) {
     url <- chomp_url(url)
 
     if (!is.null(uploaders)) {
@@ -44,17 +44,17 @@ setPermissions <- function(project, owners, uploaders, append=TRUE, url=restUrl(
     perms <- list()
     if (append) {
         old.perms <- fetchPermissions(project)
-        if (!missing(owners)) {
+        if (!is.null(owners)) {
             perms$owners <- I(union(old.perms$owners, owners))
         }
-        if (!missing(uploaders)) {
+        if (!is.null(uploaders)) {
             perms$uploaders <- c(old.perms$uploaders, uploaders)
         }
     } else {
-        if (!missing(owners)) {
+        if (!is.null(owners)) {
             perms$owners <- owners
         }
-        if (!missing(uploaders)) {
+        if (!is.null(uploaders)) {
             perms$uploaders <- uploaders 
         }
     }
