@@ -9,7 +9,7 @@ createProject(
   owners,
   uploaders = list(),
   url = restUrl(),
-  token = NULL
+  token = accessToken()
 )
 }
 \arguments{
@@ -18,24 +18,12 @@ createProject(
 \item{owners}{Character vector containing the GitHub users or organizations that are owners of this project.}
 
 \item{uploaders}{List specifying the authorized uploaders for this project.
-Each entry is a list with the following fields:
-\itemize{
-\item \code{id}, a string containing the GitHub user or organization that is authorized to upload.
-\item (optional) \code{asset}, a string containing the name of the asset that the uploader is allowed to upload to.
-If not provided, there is no restriction on the uploaded asset name.
-\item (optional) \code{version}, a string containing the name of the version that the uploader is allowed to upload to.
-If not provided, there is no restriction on the uploaded version name.
-\item (optional) \code{until}, a \link{POSIXct} object containing the expiry date of this authorization.
-If not provided, the authorization does not expire.
-\item (optional) \code{trusted}, whether the uploader is trusted.
-If not provided, defaults to \code{FALSE}.
-}}
+See the \code{uploaders} field in the \code{\link{fetchPermissions}} return value for the expected format.}
 
 \item{url}{String containing the URL of the gypsum REST API.}
 
 \item{token}{String containing a GitHub access token to authenticate to the gypsum REST API.
-The token must refer to a gypsum administrator account.
-Defaults to the token from \code{\link{accessToken}}.}
+The token must refer to a gypsum administrator account.}
 }
 \value{
 \code{NULL} is invisibly returned if the project was successfully created.
@@ -46,7 +34,7 @@ Create a new project with the associated permissions.
 \examples{
 if (interactive()) {
     createProject(
-        "test-R", 
+        "test-create", 
         owners="LTLA", 
         uploaders=list(list(id="ArtifactDB-bot"))
     )

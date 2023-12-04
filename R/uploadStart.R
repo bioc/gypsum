@@ -32,7 +32,6 @@
 #' @param url String containing the URL of the gypsum REST API.
 #' @param token String containing a GitHub access token to authenticate to the gypsum REST API.
 #' The token must refer to a user that is authorized to upload to the specified \code{project}.
-#' Defaults to the token from \code{\link{accessToken}}.
 #' @param directory String containing the path to a directory containing the \code{files} to be uploaded.
 #' This directory is assumed to correspond to a version of an asset.
 #' It only has an effect if \code{files} is a character vector, as it is used to determine the MD5 checksums and sizes.
@@ -77,7 +76,7 @@
 #'
 #' @export
 #' @import httr2
-uploadStart <- function(project, asset, version, files, links=NULL, deduplicate=TRUE, probation=FALSE, url=restUrl(), token=NULL, directory=NULL) {
+uploadStart <- function(project, asset, version, files, links=NULL, deduplicate=TRUE, probation=FALSE, url=restUrl(), token=accessToken(), directory=NULL) {
     if (is.character(files)) {
         targets <- files
         if (!is.null(directory)) {
@@ -125,14 +124,8 @@ uploadStart <- function(project, asset, version, files, links=NULL, deduplicate=
         formatted <- c(formatted, links)
     }
 
-    if (!endsWith(url, "/")) {
-        url <- paste0(url, "/")
-    }
-    if (is.null(token)) {
-        token <- accessToken()$token
-    }
-
-    req <- request(paste0(url, "upload/start/", uenc(project), "/", uenc(asset), "/", uenc(version)))
+    url <- chomp_url(url)
+    req <- request(paste0(url, "/upload/start/", uenc(project), "/", uenc(asset), "/", uenc(version)))
     req <- req_method(req, "POST")
     req <- req_body_json(req, list(files=formatted, on_probation=probation))
     req <- req_auth_bearer_token(req, token)

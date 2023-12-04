@@ -5,7 +5,7 @@
 \alias{setAccessToken}
 \title{Get and set GitHub access tokens}
 \usage{
-accessToken(full = FALSE, request = FALSE)
+accessToken(full = FALSE, request = TRUE)
 
 setAccessToken(
   token,

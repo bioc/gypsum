@@ -13,7 +13,6 @@
 #' @param url String containing the URL of the gypsum REST API.
 #' @param token String containing a GitHub access token to authenticate to the gypsum REST API.
 #' The token must refer to an owner of the \code{project}.
-#' Defaults to the token from \code{\link{accessToken}}.
 #'
 #' @author Aaron Lun
 #'
@@ -35,11 +34,8 @@
 #' }
 #'
 #' @export
-setPermissions <- function(project, owners, uploaders, append=TRUE, url=restUrl(), token=NULL) {
+setPermissions <- function(project, owners, uploaders, append=TRUE, url=restUrl(), token=accessToken()) {
     url <- chomp_url(url)
-    if (is.null(token)) {
-        token <- accessToken()$token
-    }
 
     if (!is.null(uploaders)) {
         uploaders <- sanitize_uploaders(uploaders)

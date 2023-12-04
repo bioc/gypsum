@@ -2,6 +2,7 @@
 
 export(accessToken)
 export(createProject)
+export(fetchFile)
 export(fetchPermissions)
 export(publicS3Config)
 export(restUrl)

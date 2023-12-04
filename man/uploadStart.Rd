@@ -13,7 +13,7 @@ uploadStart(
   deduplicate = TRUE,
   probation = FALSE,
   url = restUrl(),
-  token = NULL,
+  token = accessToken(),
   directory = NULL
 )
 }
@@ -55,8 +55,7 @@ Such uploads must be approved by the project owner before they are considered of
 \item{url}{String containing the URL of the gypsum REST API.}
 
 \item{token}{String containing a GitHub access token to authenticate to the gypsum REST API.
-The token must refer to a user that is authorized to upload to the specified \code{project}.
-Defaults to the token from \code{\link{accessToken}}.}
+The token must refer to a user that is authorized to upload to the specified \code{project}.}
 
 \item{directory}{String containing the path to a directory containing the \code{files} to be uploaded.
 This directory is assumed to correspond to a version of an asset.

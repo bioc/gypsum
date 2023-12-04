@@ -10,7 +10,7 @@ setPermissions(
   uploaders,
   append = TRUE,
   url = restUrl(),
-  token = NULL
+  token = accessToken()
 )
 }
 \arguments{
@@ -29,8 +29,7 @@ If \code{FALSE}, the \code{owners} and \code{uploaders} are used to replace the 
 \item{url}{String containing the URL of the gypsum REST API.}
 
 \item{token}{String containing a GitHub access token to authenticate to the gypsum REST API.
-The token must refer to an owner of the \code{project}.
-Defaults to the token from \code{\link{accessToken}}.}
+The token must refer to an owner of the \code{project}.}
 }
 \value{
 \code{NULL} is invisibly returned upon successful setting of the permissions.
