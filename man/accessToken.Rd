@@ -10,9 +10,10 @@ accessToken(full = FALSE, request = TRUE)
 setAccessToken(
   token,
   disk.cache = TRUE,
-  url = "https://api.github.com",
+  app.url = restUrl(),
   app.key = NULL,
   app.secret = NULL,
+  github.url = "https://api.github.com",
   user.agent = NULL
 )
 }
@@ -29,22 +30,24 @@ If \code{NULL}, any existing tokens are cleared from cache.}
 \item{disk.cache}{Logical scalar indicating whether to cache the token to disk.
 If \code{FALSE}, the token is only cached in memory, which can be helpful for security purposes.}
 
-\item{app.key}{String containing the key for a GitHub Oauth app.
-If \code{NULL}, the default \dQuote{ArtifactDB} application is used.}
+\item{app.url}{String containing a URL of the gypsum REST API.
+This is used to obtain \code{app.key} and \code{app.secret} if either are \code{NULL}.}
 
-\item{app.secret}{String containing the secret for a GitHub Oauth app.
-If \code{NULL}, the default \dQuote{ArtifactDB} application is used.}
+\item{app.key}{String containing the key for a GitHub Oauth app.}
+
+\item{app.secret}{String containing the secret for a GitHub Oauth app.}
+
+\item{github.url}{String containing the URL for the GitHub API.
+This is used to acquire more information about the token.}
 
 \item{user.agent}{String specifying the user agent for queries to various endpoints.}
-
-\item{github.url}{String containing the URL for the GitHub API.}
 }
 \value{
 \code{setAccessToken} sets the access token and invisibly returns a list containing:
 \itemize{
 \item \code{token}, a string containing the token.
 \item \code{name}, the name of the GitHub user authenticated by the token.
-\item \code{expiry}, the Unix time at which the token expires.
+\item \code{expires}, the Unix time at which the token expires.
 }
 
 If \code{full=TRUE}, \code{accessToken} returns the same list, typically retrieved from one of the caches.

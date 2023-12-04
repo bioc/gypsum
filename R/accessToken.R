@@ -11,10 +11,11 @@
 #' @param disk.cache Logical scalar indicating whether to cache the token to disk.
 #' If \code{FALSE}, the token is only cached in memory, which can be helpful for security purposes.
 #' @param github.url String containing the URL for the GitHub API.
+#' This is used to acquire more information about the token.
 #' @param app.key String containing the key for a GitHub Oauth app.
-#' If \code{NULL}, the default \dQuote{ArtifactDB} application is used.
 #' @param app.secret String containing the secret for a GitHub Oauth app.
-#' If \code{NULL}, the default \dQuote{ArtifactDB} application is used.
+#' @param app.url String containing a URL of the gypsum REST API.
+#' This is used to obtain \code{app.key} and \code{app.secret} if either are \code{NULL}.
 #' @param user.agent String specifying the user agent for queries to various endpoints.
 #'
 #' @return
@@ -22,7 +23,7 @@
 #' \itemize{
 #' \item \code{token}, a string containing the token.
 #' \item \code{name}, the name of the GitHub user authenticated by the token.
-#' \item \code{expiry}, the Unix time at which the token expires.
+#' \item \code{expires}, the Unix time at which the token expires.
 #' }
 #' 
 #' If \code{full=TRUE}, \code{accessToken} returns the same list, typically retrieved from one of the caches.
@@ -91,23 +92,23 @@ accessToken <- function(full = FALSE, request=TRUE) {
 #' @export
 #' @rdname accessToken
 #' @import httr2
-setAccessToken <- function(token, disk.cache=TRUE, url="https://api.github.com", app.key = NULL, app.secret = NULL, user.agent=NULL) {
+setAccessToken <- function(token, disk.cache=TRUE, app.url=restUrl(), app.key = NULL, app.secret = NULL, github.url="https://api.github.com", user.agent=NULL) {
     cache.path <- token_cache_path()
     if (!missing(token) && is.null(token)) {
         token.cache$auth.info <- NULL
         if (disk.cache) { # don't write to disk if cache=FALSE.
-            unlink(cache.path())
+            unlink(cache.path)
         }
         return(invisible(NULL))
     }
 
     if (missing(token)) {
         if (is.null(app.key) || is.null(app.secret)) {
-            req <- request(paste0(default.laundry, "/.github-app-info"))
+            req <- request(paste0(chomp_url(app.url), "/credentials/github-app"))
             req <- req_user_agent(req, user.agent)
             res <- req_perform(req)
             info <- resp_body_json(res)
-            app.key <- info$key
+            app.key <- info$id
             app.secret <- info$secret
         }
 
@@ -121,7 +122,7 @@ setAccessToken <- function(token, disk.cache=TRUE, url="https://api.github.com",
         token <- ores$access_token
     }
 
-    req <- request(paste0(url, "/user"))
+    req <- request(paste0(chomp_url(github.url), "/user"))
     req <- req_auth_bearer_token(req, token)
     req <- req_user_agent(req, user.agent)
     res <- req_perform(req)
@@ -141,5 +142,3 @@ setAccessToken <- function(token, disk.cache=TRUE, url="https://api.github.com",
     token.cache$auth.info <- vals
     invisible(vals)
 }
-
-default.laundry <- "https://gh2jwt.aaron-lun.workers.dev"
