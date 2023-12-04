@@ -2,11 +2,13 @@
 
 export(abortUpload)
 export(accessToken)
+export(approveProbation)
 export(completeUpload)
 export(createProject)
 export(fetchFile)
 export(fetchPermissions)
 export(publicS3Config)
+export(rejectProbation)
 export(restUrl)
 export(setAccessToken)
 export(setPermissions)
