@@ -2,9 +2,11 @@
 
 export(accessToken)
 export(createProject)
+export(fetchPermissions)
 export(publicS3Config)
 export(restUrl)
 export(setAccessToken)
+export(setPermissions)
 export(uploadAbort)
 export(uploadComplete)
 export(uploadFiles)
