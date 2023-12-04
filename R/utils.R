@@ -16,3 +16,23 @@ sanitize_uploaders <- function(uploaders) {
     }
     uploaders
 }
+
+create_arguments <- function(path, config) {
+    list(
+        object=path,
+        bucket=config$bucket, 
+        key=config$key, 
+        secret=config$secret, 
+        base_url=sub("^http[s]://", "", config$endpoint), 
+        region=""
+    )
+}
+
+get_file <- function(path, config) {
+    args <- create_arguments(path, config)
+    if (!do.call(object_exists, args)) {
+        stop("no permissions present for '", project, "'")
+    }
+    do.call(get_object, args)
+}
+
