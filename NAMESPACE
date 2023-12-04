@@ -3,6 +3,7 @@
 export(abortUpload)
 export(accessToken)
 export(approveProbation)
+export(cacheDirectory)
 export(completeUpload)
 export(createProject)
 export(fetchFile)
