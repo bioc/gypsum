@@ -60,7 +60,7 @@ accessToken <- function(full = FALSE, request=TRUE) {
 
     in.memory <- token.cache$auth.info
     if (!is.null(in.memory)) {
-        if (in.memory$expiry > Sys.time() + expiry_leeway) {
+        if (in.memory$expires > Sys.time() + expiry_leeway) {
             return(OFn(in.memory))
         } else {
             token.cache$auth.info <- NULL
