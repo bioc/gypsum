@@ -34,21 +34,8 @@
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-#' @importFrom aws.s3 object_exists get_object
 fetchPermissions <- function(project, config=publicS3Config()) {
-    args <- list(
-        object=paste0(project, "/..permissions"), 
-        bucket=config$bucket, 
-        key=config$key, 
-        secret=config$secret, 
-        base_url=sub("^http[s]://", "", config$endpoint), 
-        region=""
-    )
-
-    if (!do.call(object_exists, args)) {
-        stop("no permissions present for '", project, "'")
-    }
-    out <- do.call(get_object, args)
+    out <- get_file(paste0(project, "/..permissions"), config=config, precheck=TRUE)
 
     msg <- rawToChar(out)
     if (grepl("^<", msg)) {
@@ -57,12 +44,7 @@ fetchPermissions <- function(project, config=publicS3Config()) {
     perms <- fromJSON(msg, simplifyVector=FALSE)
 
     # Converting everything to POSIX dates.
-    for (i in seq_along(perms$uploaders)) {
-        current <- perms$uploaders[[i]]
-        if ("until" %in% names(current)) {
-            perms$uploaders[[i]]$until <- .cast_datetime(current$until)
-        }
-    }
+    perms$uploaders <- sanitize_uploaders(perms$uploaders)
 
     perms
 }
