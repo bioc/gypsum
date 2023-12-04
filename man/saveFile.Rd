@@ -11,7 +11,8 @@ saveFile(
   path,
   destination = NULL,
   config = publicS3Config(),
-  check = TRUE
+  precheck = TRUE,
+  overwrite = NULL
 )
 }
 \arguments{
@@ -28,8 +29,12 @@ If \code{NULL}, a path inside the \code{\link{cacheDirectory}} is used.}
 
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 
-\item{check}{Whether to check if the file exists before attempting a download.
+\item{precheck}{Whether to check if the file exists before attempting a download.
 This may be omitted if the file is known to exist.}
+
+\item{overwrite}{Logical scalar indicating whether to overwrite an existing file at \code{destination}.
+If \code{FALSE} and \code{destination} exists, the download is skipped.
+Defaults to \code{!is.null(destination)}, so no extra downloads are performed if the file is already cached.}
 }
 \value{
 The file is downloaded to the local file system.
