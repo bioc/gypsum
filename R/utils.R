@@ -43,24 +43,37 @@ create_arguments <- function(path, config) {
     )
 }
 
-get_file <- function(path, config) {
+#' @importFrom aws.s3 get_object object_exists
+get_file <- function(path, config, precheck) {
     args <- create_arguments(path, config)
-    if (!do.call(object_exists, args)) {
-        stop("no permissions present for '", project, "'")
+    if (precheck && !do.call(object_exists, args)) {
+        stop("'", path, "' does not exist in the bucket")
     }
     do.call(get_object, args)
 }
 
+#' @importFrom aws.s3 save_object object_exists
+save_file <- function(path, destination, overwrite, config, precheck) {
+    if (overwrite || !file.exists(destination)) {
+        args <- create_arguments(path, config)
+        if (precheck && !do.call(object_exists, args)) {
+            stop("'", path, "' does not exist in the bucket")
+        }
+        args$file <- destination
+        args$parse_response <- FALSE
+        do.call(save_object, args)
+    }
+}
+
 #' @importFrom jsonlite fromJSON
-get_cacheable_json <- function(components, cache, config) {
+get_cacheable_json <- function(components, cache, config, overwrite, precheck) {
+    path <- paste(components, collapse="/")
     if (is.null(cache)) {
-        path <- paste(components, collapse="/")
-        out <- get_file(path, config=config)
+        out <- get_file(path, config=config, precheck=precheck)
         out <- rawToChar(out)
     } else {
-        destination <- do.call(file.path, c(list(cache, "bucket"), as.list(components)))
-        out <- saveFile(project, asset, version, "..manifest", destination=destination, config=config, overwrite=FALSE)
+        out <- do.call(file.path, c(list(cache, "bucket"), as.list(components)))
+        save_file(path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
     }
     fromJSON(out, simplifyVector=FALSE)
 }
-

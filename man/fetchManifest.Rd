@@ -9,6 +9,8 @@ fetchManifest(
   asset,
   version,
   cache = cacheDirectory(),
+  overwrite = FALSE,
+  precheck = TRUE,
   config = publicS3Config()
 )
 }
@@ -21,6 +23,11 @@ fetchManifest(
 
 \item{cache}{String containing the cache directory.
 If \code{NULL}, no caching is performed.}
+
+\item{overwrite}{Logical scalar indicating whether to overwrite an existing file in \code{cache}, if one is present.}
+
+\item{precheck}{Whether to check if the file exists in the bucket before attempting a download.
+This may be omitted if the file is known to exist.}
 
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }

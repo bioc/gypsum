@@ -2,12 +2,10 @@
 #'
 #' Fetch the manifest for a version of an asset of a project.
 #'
-#' @param project String containing the project name.
-#' @param asset String containing the asset name.
-#' @param version String containing the version name.
+#' @inheritParams saveFile
 #' @param cache String containing the cache directory.
 #' If \code{NULL}, no caching is performed.
-#' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
+#' @param overwrite Logical scalar indicating whether to overwrite an existing file in \code{cache}, if one is present.
 #'
 #' @author Aaron Lun
 #' 
@@ -25,6 +23,12 @@
 #' fetchManifest("test-R", "upload-check", "v1")
 #' 
 #' @export
-fetchManifest <- function(project, asset, version, cache=cacheDirectory(), config=publicS3Config()) {
-    get_cacheable_json(c(project, asset, version, "..manifest"), cache=cache, config=config)
+fetchManifest <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {
+    get_cacheable_json(
+       c(project, asset, version, "..manifest"), 
+       cache=cache, 
+       config=config, 
+       overwrite=overwrite, 
+       precheck=precheck
+    )
 }

@@ -2,12 +2,7 @@
 #'
 #' Fetch the summary for a version of an asset of a project.
 #'
-#' @param project String containing the project name.
-#' @param asset String containing the asset name.
-#' @param version String containing the version name.
-#' @param cache String containing the cache directory.
-#' If \code{NULL}, no caching is performed.
-#' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
+#' @inheritParams fetchManifest
 #'
 #' @author Aaron Lun
 #' 
@@ -24,8 +19,14 @@
 #' fetchSummary("test-R", "upload-check", "v1")
 #' 
 #' @export
-fetchSummary <- function(project, asset, version, cache=cacheDirectory(), config=publicS3Config()) {
-    out <- get_cacheable_json(c(project, asset, version, "..summary"), cache=cache, config=config)
+fetchSummary <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {
+    out <- get_cacheable_json(
+        c(project, asset, version, "..summary"), 
+        cache=cache, 
+        overwrite=overwrite,
+        precheck=precheck,
+        config=config
+    )
     out$upload_start <- .cast_datetime(out$upload_start)
     out$upload_finish <- .cast_datetime(out$upload_finish)
     out

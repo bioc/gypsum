@@ -10,9 +10,9 @@ saveFile(
   version,
   path,
   destination = NULL,
-  config = publicS3Config(),
+  overwrite = NULL,
   precheck = TRUE,
-  overwrite = NULL
+  config = publicS3Config()
 )
 }
 \arguments{
@@ -24,24 +24,24 @@ saveFile(
 
 \item{path}{String containing the relative path to the file inside the version.}
 
-\item{destination}{String containing the destination path for the file.
+\item{destination}{String containing the destination path on the local filesystem. 
 If \code{NULL}, a path inside the \code{\link{cacheDirectory}} is used.}
-
-\item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
-
-\item{precheck}{Whether to check if the file exists before attempting a download.
-This may be omitted if the file is known to exist.}
 
 \item{overwrite}{Logical scalar indicating whether to overwrite an existing file at \code{destination}.
 If \code{FALSE} and \code{destination} exists, the download is skipped.
 Defaults to \code{!is.null(destination)}, so no extra downloads are performed if the file is already cached.}
+
+\item{precheck}{Whether to check if the file exists in the bucket before attempting a download.
+This may be omitted if the file is known to exist.}
+
+\item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }
 \value{
 The file is downloaded to the local file system.
 The destination file path is invisibly returned.
 }
 \description{
-Download a file for a version of a project from the gypsum bucket.
+Download a file from the gypsum bucket, for a version of an asset of a project.
 }
 \examples{
 out <- saveFile("test-R", "upload-check", "v1", "blah.txt")
