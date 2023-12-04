@@ -20,7 +20,7 @@
 #' @examples
 #' if (interactive()) {
 #'     createProject(
-#'         "test-create", 
+#'         "test-R-create", 
 #'         owners="LTLA", 
 #'         uploaders=list(list(id="ArtifactDB-bot"))
 #'     )
