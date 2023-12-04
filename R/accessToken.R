@@ -46,7 +46,7 @@ token.cache$auth.info <- NULL
 
 #' @importFrom tools R_user_dir
 token_cache_path <- function() {
-    file.path(R_user_dir("gypsum", "cache"), "token.txt")
+    file.path(cacheDirectory(), "credentials", "token.txt")
 }
 
 #' @export
@@ -137,6 +137,7 @@ setAccessToken <- function(token, disk.cache=TRUE, app.url=restUrl(), app.key = 
     if (disk.cache) {
         dir.create(dirname(cache.path), showWarnings=FALSE, recursive=TRUE)
         writeLines(c(token, name, expiry), con=cache.path)
+        Sys.chmod(cache.path, mode="0600") # prevent anyone else from reading this on shared file systems.
     }
     vals <- list(token=token, name=name, expires=expiry)
     token.cache$auth.info <- vals
