@@ -1,0 +1,24 @@
+Package: gypsum 
+Version: 0.98.0
+Date: 2023-12-03
+Title: Interface to the gypsum REST API
+Description:
+    Friendly interface to the gypsum REST API.
+    Provides functions for uploads, downloads, and various adminstrative and management tasks.
+Authors@R: person("Aaron", "Lun", role=c("aut", "cre"), email="infinite.monkeys.with.keyboards@gmail.com")
+License: MIT + file LICENSE
+Imports:
+    methods,
+    utils,
+    httr,
+    jsonlite
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat,
+    BiocStyle,
+    curl,
+    digest,
+    filelock
+RoxygenNote: 7.2.3
+VignetteBuilder: knitr
