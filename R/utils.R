@@ -3,8 +3,23 @@ uenc <- function(x) URLencode(x, reserved=TRUE)
 chomp_url <- function(url) sub("/*$", "", url)
 
 .cast_datetime <- function(x) {
-    # Remove colon in the timezone, which confuses as.POSIXct().
-    as.POSIXct(sub(":([0-9]{2})$", "\\1", x), format="%Y-%m-%dT%H:%M:%S%z")
+    zend <- endsWith(x, "Z")
+
+    if (any(zend)) {
+        # strptime doesn't know how to handle 'Z' offsets.
+        xz <- x[zend]
+        x[zend] <- sprintf("%s+0000", substr(xz, 1L, nchar(xz)-1L))
+    }
+
+    if (!all(zend)) {
+        # Remove colon in the timezone, which confuses as.POSIXct().
+        x[!zend] <- sub(":([0-9]{2})$", "\\1", x[!zend])
+    }
+
+    # Remove fractional seconds.
+    x <- sub("\\.[0-9]+", "", x)
+
+    as.POSIXct(x, format="%Y-%m-%dT%H:%M:%S%z")
 }
 
 sanitize_uploaders <- function(uploaders) {
@@ -34,5 +49,18 @@ get_file <- function(path, config) {
         stop("no permissions present for '", project, "'")
     }
     do.call(get_object, args)
+}
+
+#' @importFrom jsonlite fromJSON
+get_cacheable_json <- function(components, cache, config) {
+    if (is.null(cache)) {
+        path <- paste(components, collapse="/")
+        out <- get_file(path, config=config)
+        out <- rawToChar(out)
+    } else {
+        destination <- do.call(file.path, c(list(cache, "bucket"), as.list(components)))
+        out <- saveFile(project, asset, version, "..manifest", destination=destination, config=config, overwrite=FALSE)
+    }
+    fromJSON(out, simplifyVector=FALSE)
 }
 
