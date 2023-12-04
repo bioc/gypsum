@@ -8,7 +8,7 @@ uploadFiles(init, directory = NULL, url = restUrl(), concurrent = 1)
 }
 \arguments{
 \item{init}{List containing \code{file_urls} and \code{session_token}.
-This is typically the return value from \code{\link{uploadStart}}.}
+This is typically the return value from \code{\link{startUpload}}.}
 
 \item{directory}{String containing the path to a directory containing the \code{files} to be uploaded.
 This directory is assumed to correspond to a version of an asset.
@@ -33,7 +33,7 @@ dir.create(file.path(tmp, "foo"))
 write(file=file.path(tmp, "foo", "bar.txt"), 1:10)
 
 if (interactive()) {
-    init <- uploadStart(
+    init <- startUpload(
         project="test-R", 
         asset="upload-files-check", 
         version="v1", 
@@ -45,12 +45,12 @@ if (interactive()) {
     uploadFiles(init, directory=tmp)
 
     # Cleaning up after we're done.
-    uploadAbort(init) 
+    abortUpload(init) 
 }
 
 }
 \seealso{
-\code{\link{uploadStart}}, to create \code{init}.
+\code{\link{startUpload}}, to create \code{init}.
 }
 \author{
 Aaron Lun

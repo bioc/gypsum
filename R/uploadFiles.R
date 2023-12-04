@@ -3,14 +3,14 @@
 #' Upload files in an initialized upload session for a version of an asset.
 #'
 #' @param init List containing \code{file_urls} and \code{session_token}.
-#' This is typically the return value from \code{\link{uploadStart}}.
-#' @inheritParams uploadStart
+#' This is typically the return value from \code{\link{startUpload}}.
+#' @inheritParams startUpload
 #' @param concurrent Integer specifying the number of concurrent uploads.
 #' 
 #' @return \code{NULL} is invisibly returned on successful upload of all files.
 #' 
 #' @seealso
-#' \code{\link{uploadStart}}, to create \code{init}.
+#' \code{\link{startUpload}}, to create \code{init}.
 #' 
 #' @author Aaron Lun
 #' @examples
@@ -21,7 +21,7 @@
 #' write(file=file.path(tmp, "foo", "bar.txt"), 1:10)
 #'
 #' if (interactive()) {
-#'     init <- uploadStart(
+#'     init <- startUpload(
 #'         project="test-R", 
 #'         asset="upload-files-check", 
 #'         version="v1", 
@@ -33,7 +33,7 @@
 #'     uploadFiles(init, directory=tmp)
 #'
 #'     # Cleaning up after we're done.
-#'     uploadAbort(init) 
+#'     abortUpload(init) 
 #' }
 #'
 #' @export

@@ -41,17 +41,17 @@
 #' \itemize{
 #' \item \code{file_urls}, a list of lists containing information about each file to be uploaded.
 #' This is used by \code{\link{uploadFiles}}.
-#' \item \code{complete_url}, a string containing the completion URL, to be used by \code{\link{uploadComplete}}.
-#' \item \code{abort_url}, a string specifying the abort URL, to be used by \code{\link{uploadAbort}}.
+#' \item \code{complete_url}, a string containing the completion URL, to be used by \code{\link{completeUpload}}.
+#' \item \code{abort_url}, a string specifying the abort URL, to be used by \code{\link{abortUpload}}.
 #' \item \code{session_token}, a string for authenticating to the newly initialized upload session.
 #' }
 #'
 #' @seealso
 #' \code{\link{uploadFiles}}, to actually upload the files.
 #'
-#' \code{\link{uploadComplete}}, to indicate that the upload is completed.
+#' \code{\link{completeUpload}}, to indicate that the upload is completed.
 #'
-#' \code{\link{uploadAbort}}, to abort an upload in progress.
+#' \code{\link{abortUpload}}, to abort an upload in progress.
 #'
 #' @author Aaron Lun
 #' @examples
@@ -62,7 +62,7 @@
 #' write(file=file.path(tmp, "foo", "bar.txt"), 1:10)
 #'
 #' if (interactive()) {
-#'     blob <- uploadStart(
+#'     blob <- startUpload(
 #'         project="test-R", 
 #'         asset="upload-start-check", 
 #'         version="v1", 
@@ -71,12 +71,12 @@
 #'     )
 #'     print(blob)
 #'
-#'     uploadAbort(blob) # just cleaning up after we're done.
+#'     abortUpload(blob) # just cleaning up after we're done.
 #' }
 #'
 #' @export
 #' @import httr2
-uploadStart <- function(project, asset, version, files, links=NULL, deduplicate=TRUE, probation=FALSE, url=restUrl(), token=accessToken(), directory=NULL) {
+startUpload <- function(project, asset, version, files, links=NULL, deduplicate=TRUE, probation=FALSE, url=restUrl(), token=accessToken(), directory=NULL) {
     if (is.character(files)) {
         targets <- files
         if (!is.null(directory)) {

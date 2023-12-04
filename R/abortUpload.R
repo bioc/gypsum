@@ -3,13 +3,13 @@
 #' Abort an upload session, usually after an irrecoverable error. 
 #'
 #' @param init List containing \code{abort_url} and \code{session_token}.
-#' This is typically the return value from \code{\link{uploadStart}}.
-#' @inheritParams uploadStart
+#' This is typically the return value from \code{\link{startUpload}}.
+#' @inheritParams startUpload
 #' 
 #' @return \code{NULL} is invisibly returned on successful abort.
 #' 
 #' @seealso
-#' \code{\link{uploadStart}}, to create \code{init}.
+#' \code{\link{startUpload}}, to create \code{init}.
 #' 
 #' @author Aaron Lun
 #' @examples
@@ -20,7 +20,7 @@
 #' write(file=file.path(tmp, "foo", "bar.txt"), 1:10)
 #'
 #' if (interactive()) {
-#'     init <- uploadStart(
+#'     init <- startUpload(
 #'         project="test-R", 
 #'         asset="upload-abort-check", 
 #'         version="v1", 
@@ -30,12 +30,12 @@
 #'     )
 #'
 #'     # Aborting the upload.
-#'     uploadAbort(init) 
+#'     abortUpload(init) 
 #' }
 #'
 #' @export
 #' @import httr2
-uploadAbort <- function(init, url=restUrl()) {
+abortUpload <- function(init, url=restUrl()) {
     url <- chomp_url(url)
     req <- request(paste0(url, init$abort_url))
     req <- req_method(req, "POST")

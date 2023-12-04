@@ -3,13 +3,13 @@
 #' Complete an upload session after all files have been uploaded.
 #'
 #' @param init List containing \code{complete_url} and \code{session_token}.
-#' This is typically the return value from \code{\link{uploadStart}}.
-#' @inheritParams uploadStart
+#' This is typically the return value from \code{\link{startUpload}}.
+#' @inheritParams startUpload
 #' 
 #' @return \code{NULL} is invisibly returned on successful completion.
 #' 
 #' @seealso
-#' \code{\link{uploadStart}}, to create \code{init}.
+#' \code{\link{startUpload}}, to create \code{init}.
 #' 
 #' @author Aaron Lun
 #' @examples
@@ -20,7 +20,7 @@
 #' write(file=file.path(tmp, "foo", "bar.txt"), 1:10)
 #'
 #' if (interactive()) {
-#'     init <- uploadStart(
+#'     init <- startUpload(
 #'         project="test-R", 
 #'         asset="upload-complete-check", 
 #'         version="v1", 
@@ -31,12 +31,12 @@
 #'     uploadFiles(init, directory=tmp)
 #'
 #'     # Finishing the upload.
-#'     uploadComplete(init) 
+#'     completeUpload(init) 
 #' }
 #'
 #' @export
 #' @import httr2
-uploadComplete <- function(init, url=restUrl()) {
+completeUpload <- function(init, url=restUrl()) {
     url <- chomp_url(url)
     req <- request(paste0(url, init$complete_url))
     req <- req_method(req, "POST")
