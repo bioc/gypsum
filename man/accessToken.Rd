@@ -5,7 +5,7 @@
 \alias{setAccessToken}
 \title{Get and set GitHub access tokens}
 \usage{
-accessToken()
+accessToken(full = FALSE, request = FALSE)
 
 setAccessToken(
   token,
@@ -17,6 +17,10 @@ setAccessToken(
 )
 }
 \arguments{
+\item{full}{Logical scalar indicating whether to return the full token details.}
+
+\item{request}{Logical scalar indicating whether to request a new token if no cached token is available or if the current token has expired.}
+
 \item{token}{String containing a GitHub personal access token.
 This should have the \code{"read:org"} and \code{"read:user"} scopes.
 If missing, the user will be prompted to use GitHub's Oauth web application flow to acquire a token.
@@ -43,8 +47,11 @@ If \code{NULL}, the default \dQuote{ArtifactDB} application is used.}
 \item \code{expiry}, the Unix time at which the token expires.
 }
 
-\code{accessToken} returns the same list, typically retrieved from one of the caches.
-If no token was cached, it will call \code{setAccessToken} with default arguments to obtain one.
+If \code{full=TRUE}, \code{accessToken} returns the same list, typically retrieved from one of the caches.
+If no token was cached or the cached token has expired, it will call \code{setAccessToken} with default arguments to obtain one if \code{request=TRUE};
+otherwise if \code{request=FALSE}, \code{NULL} is returned.
+
+If \code{full=FALSE}, \code{accessToken} will return a string containing a token (or \code{NULL}, if no token is available and \code{request=FALSE}).
 }
 \description{
 Get and set GitHub access tokens for authentication to the gypsum API's endpoints.

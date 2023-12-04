@@ -2,6 +2,8 @@
 #'
 #' Get and set GitHub access tokens for authentication to the gypsum API's endpoints.
 #'
+#' @param full Logical scalar indicating whether to return the full token details.
+#' @param request Logical scalar indicating whether to request a new token if no cached token is available or if the current token has expired.
 #' @param token String containing a GitHub personal access token.
 #' This should have the \code{"read:org"} and \code{"read:user"} scopes.
 #' If missing, the user will be prompted to use GitHub's Oauth web application flow to acquire a token.
@@ -23,8 +25,11 @@
 #' \item \code{expiry}, the Unix time at which the token expires.
 #' }
 #' 
-#' \code{accessToken} returns the same list, typically retrieved from one of the caches.
-#' If no token was cached, it will call \code{setAccessToken} with default arguments to obtain one. 
+#' If \code{full=TRUE}, \code{accessToken} returns the same list, typically retrieved from one of the caches.
+#' If no token was cached or the cached token has expired, it will call \code{setAccessToken} with default arguments to obtain one if \code{request=TRUE};
+#' otherwise if \code{request=FALSE}, \code{NULL} is returned.
+#'
+#' If \code{full=FALSE}, \code{accessToken} will return a string containing a token (or \code{NULL}, if no token is available and \code{request=FALSE}).
 #'
 #' @author Aaron Lun
 #'
@@ -45,20 +50,42 @@ token_cache_path <- function() {
 
 #' @export
 #' @rdname accessToken
-accessToken <- function() {
+accessToken <- function(full = FALSE, request=TRUE) {
+    if (full) {
+        OFn <- identity
+    } else {
+        OFn <- function(x) x$token
+    }
+    expiry_leeway <- 10 # number of seconds until use of the token.
+
     in.memory <- token.cache$auth.info
     if (!is.null(in.memory)) {
-        return(in.memory)
+        if (in.memory$expiry > Sys.time() + expiry_leeway) {
+            return(OFn(in.memory))
+        } else {
+            token.cache$auth.info <- NULL
+        }
     }
 
     cache.path <- token_cache_path()
     if (file.exists(cache.path)) {
         dump <- readLines(cache.path)
-        return(list(token=dump[1], name=dump[2], expires=dump[3]))
+        exp <- as.double(dump[3])
+        if (exp > Sys.time() + expiry_leeway) {
+            info <- list(token=dump[1], name=dump[2], expires=exp)
+            token.cache$auth.info <- info
+            return(OFn(info))
+        } else {
+            unlink(cache.path)
+        }
     }
 
-    payload <- setAccessToken()
-    payload # making it visible.
+    if (request) {
+        payload <- setAccessToken()
+        OFn(payload) # making it visible.
+    } else {
+        NULL
+    }
 }
 
 #' @export
