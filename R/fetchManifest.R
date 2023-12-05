@@ -20,7 +20,7 @@
 #' }
 #' 
 #' @examples
-#' fetchManifest("test-R", "upload-check", "v1")
+#' fetchManifest("test-R", "basic", "v1")
 #' 
 #' @export
 fetchManifest <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {

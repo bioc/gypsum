@@ -20,7 +20,7 @@ Character vector of versions.
 List all versions of a project asset.
 }
 \examples{
-listVersions("test-R", "upload-check")
+listVersions("test-R", "basic")
 
 }
 \author{

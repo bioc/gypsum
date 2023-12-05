@@ -41,7 +41,7 @@ The file is downloaded to the local file system. The destination file path is re
 Download a file from the gypsum bucket, for a version of an asset of a project.
 }
 \examples{
-out <- saveFile("test-R", "upload-check", "v1", "blah.txt")
+out <- saveFile("test-R", "basic", "v1", "blah.txt")
 readLines(out)
 
 }

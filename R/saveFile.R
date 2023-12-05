@@ -23,7 +23,7 @@
 #' \code{\link{cacheDirectory}}, for file caching.
 #' 
 #' @examples
-#' out <- saveFile("test-R", "upload-check", "v1", "blah.txt")
+#' out <- saveFile("test-R", "basic", "v1", "blah.txt")
 #' readLines(out)
 #' 
 #' @export

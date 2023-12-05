@@ -55,13 +55,17 @@ resolveLinks <- function(project, asset, version, cache=cacheDirectory(), overwr
             nextlinkdata <- target$link
             if (is.null(nextlinkdata)) {
                 # Too tedious to try to parallelize, so we'll just go in one by one.
-                out <- saveFile(linkdata$project, linkdata$asset, linkdata$version, linkdata$path, cache=cache, config=config)
+                out <- saveFile(linkdata$project, linkdata$asset, linkdata$version, linkdata$path, cache=cache, config=config, overwrite=overwrite)
+
                 for (old in oldloc) {
-                    unlink(old) # remove any existing file.
-                    if (!file.link(old, out) && !file.copy(old, out)) {
+                    oldpath <- file.path(cache, BUCKET_CACHE_NAME, old)
+                    unlink(oldpath, force=TRUE) # remove any existing file.
+                    dir.create(dirname(oldpath), showWarnings=FALSE, recursive=TRUE)
+                    if (!file.link(out, oldpath) && !file.copy(out, oldpath)) {
                         stop("failed to resolve link for '", l, "'")
                     }
                 }
+
                 break
             }
 

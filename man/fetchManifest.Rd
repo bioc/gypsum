@@ -46,7 +46,7 @@ This contains the strings \code{project}, \code{asset}, \code{version} and \code
 Fetch the manifest for a version of an asset of a project.
 }
 \examples{
-fetchManifest("test-R", "upload-check", "v1")
+fetchManifest("test-R", "basic", "v1")
 
 }
 \author{

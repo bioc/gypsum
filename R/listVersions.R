@@ -11,7 +11,7 @@
 #' @return Character vector of versions.
 #'
 #' @examples
-#' listVersions("test-R", "upload-check")
+#' listVersions("test-R", "basic")
 #' 
 #' @export
 #' @importFrom aws.s3 get_bucket

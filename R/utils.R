@@ -72,15 +72,15 @@ BUCKET_CACHE_NAME <- 'bucket'
 
 #' @importFrom jsonlite fromJSON
 get_cacheable_json <- function(project, asset, version, path, cache, config, overwrite, precheck) {
-    path <- paste(project, asset, version, path, sep="/")
+    bucket_path <- paste(project, asset, version, path, sep="/")
     if (is.null(cache)) {
-        out <- get_file(path, config=config, precheck=precheck)
+        out <- get_file(bucket_path, config=config, precheck=precheck)
         out <- rawToChar(out)
     } else {
         out <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
         acquire_lock(cache, project, asset, version)
         on.exit(release_lock(project, asset, version))
-        save_file(path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
+        save_file(bucket_path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
     }
     fromJSON(out, simplifyVector=FALSE)
 }

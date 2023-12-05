@@ -36,7 +36,15 @@ saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwri
 
     if (!file.exists(completed) || overwrite) {
         listing <- listFiles(project, asset, version, config=config)
-        FUN <- function(x) save_file(x, file.path(destination, x), overwrite=overwrite, config=config, precheck=FALSE)
+        FUN <- function(x) {
+            save_file(
+                path=paste(project, asset, version, x, sep="/"), 
+                destination=file.path(destination, x), 
+                overwrite=overwrite, 
+                config=config, 
+                precheck=FALSE
+            )
+        }
 
         if (concurrent == 1L) {
             lapply(listing, FUN)
