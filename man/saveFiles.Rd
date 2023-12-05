@@ -45,7 +45,7 @@ Download a file from the gypsum bucket, for a version of an asset of a project.
 }
 \examples{
 out <- saveFiles("test-R", "upload-check", "v1")
-list.files(out, recursive=TRUE)
+list.files(out, recursive=TRUE, all.files=TRUE)
 
 }
 \seealso{

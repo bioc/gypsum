@@ -77,3 +77,25 @@ get_cacheable_json <- function(components, cache, config, overwrite, precheck) {
     }
     fromJSON(out, simplifyVector=FALSE)
 }
+
+#' @importFrom aws.s3 get_bucket
+list_for_prefix <- function(prefix, config) {
+    listing <- get_bucket(
+        bucket=config$bucket, 
+        prefix=prefix,
+        delimiter="/",
+        key=config$key, 
+        secret=config$secret,
+        base_url=sub("^http[s]://", "", config$endpoint), 
+        region="",
+        max=Inf
+    )
+
+    out <- attr(listing, "CommonPrefixes")
+    if (!is.null(prefix)) {
+        out <- substr(out, nchar(prefix) + 1L, nchar(out) - 1L)
+    } else {
+        out <- substr(out, 1L, nchar(out) - 1L)
+    }
+    out[!startsWith(out, "..")]
+}
