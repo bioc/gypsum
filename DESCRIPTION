@@ -1,4 +1,4 @@
-Package: gypsum 
+Package: gypsum
 Version: 0.98.0
 Date: 2023-12-03
 Title: Interface to the gypsum REST API
@@ -8,16 +8,16 @@ Description:
 Authors@R: person("Aaron", "Lun", role=c("aut", "cre"), email="infinite.monkeys.with.keyboards@gmail.com")
 License: MIT + file LICENSE
 Imports:
-    methods,
-    utils,
-    httr,
-    jsonlite
+    tools,
+    httr2,
+    jsonlite,
+    aws.s3,
+    parallel
 Suggests:
     knitr,
     rmarkdown,
     testthat,
     BiocStyle,
-    curl,
     digest,
     filelock
 RoxygenNote: 7.2.3

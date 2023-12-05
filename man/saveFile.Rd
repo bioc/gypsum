@@ -49,7 +49,7 @@ readLines(out)
 
 }
 \seealso{
-\code{\link{savePrefix}}, to save all files with the same prefix.
+\code{\link{saveFiles}}, to save all files with the same prefix.
 
 \code{\link{cacheDirectory}}, for file caching.
 }

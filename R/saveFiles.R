@@ -15,6 +15,7 @@
 #' @param overwrite Logical scalar indicating whether to overwrite an existing file at \code{destination}.
 #' If \code{FALSE} and \code{destination} exists, the download is skipped.
 #' Defaults to \code{!is.null(destination)}, so no extra downloads are performed if the file is already cached.
+#' @param concurrent Integer specifying the number of concurrent downloads.
 #' 
 #' @return The file is downloaded to the local file system.
 #' The destination file path is invisibly returned.

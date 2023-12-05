@@ -34,6 +34,8 @@ If \code{NULL}, a path inside the \code{\link{cacheDirectory}} is used.}
 If \code{FALSE} and \code{destination} exists, the download is skipped.
 Defaults to \code{!is.null(destination)}, so no extra downloads are performed if the file is already cached.}
 
+\item{concurrent}{Integer specifying the number of concurrent downloads.}
+
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }
 \value{
