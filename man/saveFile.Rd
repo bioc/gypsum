@@ -10,6 +10,7 @@ saveFile(
   version,
   path,
   destination = NULL,
+  cache = cacheDirectory(),
   overwrite = NULL,
   precheck = TRUE,
   config = publicS3Config()
@@ -25,7 +26,10 @@ saveFile(
 \item{path}{String containing the relative path to the file inside the version.}
 
 \item{destination}{String containing the destination path on the local filesystem. 
-If \code{NULL}, a path inside the \code{\link{cacheDirectory}} is used.}
+If \code{NULL}, a path inside \code{cache} is used.}
+
+\item{cache}{String containing the path to the cache directory.
+Only used if \code{destination=NULL}.}
 
 \item{overwrite}{Logical scalar indicating whether to overwrite an existing file at \code{destination}.
 If \code{FALSE} and \code{destination} exists, the download is skipped.

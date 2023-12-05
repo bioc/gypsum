@@ -7,7 +7,9 @@
 #' @param version String containing the version name.
 #' @param path String containing the relative path to the file inside the version.
 #' @param destination String containing the destination path on the local filesystem. 
-#' If \code{NULL}, a path inside the \code{\link{cacheDirectory}} is used.
+#' If \code{NULL}, a path inside \code{cache} is used.
+#' @param cache String containing the path to the cache directory.
+#' Only used if \code{destination=NULL}.
 #' @param precheck Whether to check if the file exists in the bucket before attempting a download.
 #' This may be omitted if the file is known to exist.
 #' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
@@ -30,13 +32,13 @@
 #' readLines(out)
 #' 
 #' @export
-saveFile <- function(project, asset, version, path, destination=NULL, overwrite=NULL, precheck=TRUE, config=publicS3Config()) {
+saveFile <- function(project, asset, version, path, destination=NULL, cache=cacheDirectory(), overwrite=NULL, precheck=TRUE, config=publicS3Config()) {
     if (is.null(destination)) {
         if (is.null(overwrite)) {
             overwrite <- FALSE
         }
-        destination <- do.call(file.path, c(list(cacheDirectory(), BUCKET_CACHE_NAME, project, asset, version), split(path, "/")[[1]]))
-        lck <- create_lock(project, asset, version)
+        destination <- do.call(file.path, c(list(cache, BUCKET_CACHE_NAME, project, asset, version), split(path, "/")[[1]]))
+        lck <- create_lock(cache, project, asset, version)
         on.exit(unlock(lck))
     }
 

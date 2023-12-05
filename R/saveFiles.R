@@ -10,7 +10,9 @@
 #' If \code{NULL}, all files associated with this version are listed.
 #' @param destination String containing the path to a destination subdirectory on the local filesystem. 
 #' This is treated as the version's subdirectory regardless of \code{prefix}.
-#' If \code{NULL}, a path inside the \code{\link{cacheDirectory}} is used.
+#' If \code{NULL}, a path inside \code{cache} is used.
+#' @param cache String containing the path to the cache directory.
+#' Only used if \code{destination=NULL}.
 #' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
 #' @param overwrite Logical scalar indicating whether to overwrite an existing file at \code{destination}.
 #' If \code{FALSE} and \code{destination} exists, the download is skipped.
@@ -33,20 +35,20 @@
 #' 
 #' @export
 #' @importFrom filelock unlock
-saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, overwrite=NULL, concurrent=1, config=publicS3Config()) {
+saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, cache=cacheDirectory(), overwrite=NULL, concurrent=1, config=publicS3Config()) {
     skip <- FALSE
     completed <- NULL
     if (is.null(destination)) {
         if (is.null(overwrite)) {
             overwrite <- FALSE
         }
-        lck <- create_lock(project, asset, version)
+        lck <- create_lock(cache, project, asset, version)
         on.exit(unlock(lck))
-        destination <- file.path(cacheDirectory(), BUCKET_CACHE_NAME, project, asset, version)
+        destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)
 
         # If this version's directory was previously cached in its complete form, we skip it.
         if (is.null(prefix)) {
-            completed <- file.path(cacheDirectory(), "status", project, asset, version, "COMPLETE")
+            completed <- file.path(cache, "status", project, asset, version, "COMPLETE")
             skip <- file.exists(completed)
         }
     }

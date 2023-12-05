@@ -79,7 +79,7 @@ get_cacheable_json <- function(project, asset, version, path, cache, config, ove
         out <- rawToChar(out)
     } else {
         out <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
-        lck <- create_lock(project, asset, version)
+        lck <- create_lock(cache, project, asset, version)
         on.exit(unlock(lck))
         save_file(path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
     }
@@ -87,8 +87,8 @@ get_cacheable_json <- function(project, asset, version, path, cache, config, ove
 }
 
 #' @importFrom filelock lock
-create_lock <- function(project, asset, version) {
-    lockloc <- file.path(cacheDirectory(), "status", project, asset, version, "LOCK")
+create_lock <- function(cache, project, asset, version) {
+    lockloc <- file.path(cache, "status", project, asset, version, "LOCK")
     dir.create(dirname(lockloc), recursive=TRUE, showWarnings=FALSE)
     lock(lockloc)
 }

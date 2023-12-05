@@ -10,6 +10,7 @@ saveFiles(
   version,
   prefix = NULL,
   destination = NULL,
+  cache = cacheDirectory(),
   overwrite = NULL,
   concurrent = 1,
   config = publicS3Config()
@@ -28,7 +29,10 @@ If \code{NULL}, all files associated with this version are listed.}
 
 \item{destination}{String containing the path to a destination subdirectory on the local filesystem. 
 This is treated as the version's subdirectory regardless of \code{prefix}.
-If \code{NULL}, a path inside the \code{\link{cacheDirectory}} is used.}
+If \code{NULL}, a path inside \code{cache} is used.}
+
+\item{cache}{String containing the path to the cache directory.
+Only used if \code{destination=NULL}.}
 
 \item{overwrite}{Logical scalar indicating whether to overwrite an existing file at \code{destination}.
 If \code{FALSE} and \code{destination} exists, the download is skipped.
