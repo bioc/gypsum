@@ -71,7 +71,6 @@ save_file <- function(path, destination, overwrite, config, precheck) {
 BUCKET_CACHE_NAME <- 'bucket'
 
 #' @importFrom jsonlite fromJSON
-#' @importFrom filelock unlock
 get_cacheable_json <- function(project, asset, version, path, cache, config, overwrite, precheck) {
     path <- paste(project, asset, version, path, sep="/")
     if (is.null(cache)) {
@@ -79,18 +78,33 @@ get_cacheable_json <- function(project, asset, version, path, cache, config, ove
         out <- rawToChar(out)
     } else {
         out <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
-        lck <- create_lock(cache, project, asset, version)
-        on.exit(unlock(lck))
+        acquire_lock(cache, project, asset, version)
+        on.exit(release_lock(project, asset, version))
         save_file(path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
     }
     fromJSON(out, simplifyVector=FALSE)
 }
 
+is.locked <- new.env()
+is.locked$locks <- list()
+
 #' @importFrom filelock lock
-create_lock <- function(cache, project, asset, version) {
-    lockloc <- file.path(cache, "status", project, asset, version, "LOCK")
-    dir.create(dirname(lockloc), recursive=TRUE, showWarnings=FALSE)
-    lock(lockloc)
+acquire_lock <- function(cache, project, asset, version) {
+    key <- paste(project, asset, version, sep="/")
+    if (is.null(is.locked$locks[[key]])) {
+        lockloc <- file.path(cache, "status", project, asset, version, "LOCK")
+        dir.create(dirname(lockloc), recursive=TRUE, showWarnings=FALSE)
+        is.locked$locks[[key]] <- lock(lockloc)
+    }
+}
+
+#' @importFrom filelock unlock
+release_lock <- function(project, asset, version) {
+    key <- paste(project, asset, version, sep="/")
+    if (!is.null(is.locked$locks[[key]])) {
+        unlock(is.locked$locks[[key]])
+        is.locked$locks[[key]] <- NULL
+    }
 }
 
 #' @importFrom aws.s3 get_bucket

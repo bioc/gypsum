@@ -39,8 +39,8 @@ saveFile <- function(project, asset, version, path, destination=NULL, cache=cach
 
     if (is.null(destination)) {
         destination <- do.call(file.path, c(list(cache, BUCKET_CACHE_NAME, project, asset, version), split(path, "/")[[1]]))
-        lck <- create_lock(cache, project, asset, version)
-        on.exit(unlock(lck))
+        acquire_lock(cache, project, asset, version)
+        on.exit(release_lock(project, asset, version))
     }
 
     object <- paste0(project, "/", asset, "/", version, "/", path)

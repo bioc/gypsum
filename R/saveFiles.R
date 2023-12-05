@@ -34,7 +34,6 @@
 #' list.files(out, recursive=TRUE, all.files=TRUE)
 #' 
 #' @export
-#' @importFrom filelock unlock
 saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, cache=cacheDirectory(), overwrite=NULL, concurrent=1, config=publicS3Config()) {
     if (is.null(overwrite)) {
         overwrite <- !is.null(destination)
@@ -43,8 +42,8 @@ saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, ca
     skip <- FALSE
     completed <- NULL
     if (is.null(destination)) {
-        lck <- create_lock(cache, project, asset, version)
-        on.exit(unlock(lck))
+        acquire_lock(cache, project, asset, version)
+        on.exit(release_lock(project, asset, version))
         destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)
 
         # If this version's directory was previously cached in its complete form, we skip it.
