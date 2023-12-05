@@ -40,7 +40,7 @@ The version's files are downloaded to the local file system, and the path to the
 Download all files associated with a version of an asset of a project from the gypsum bucket.
 }
 \examples{
-out <- saveVersion("test-R", "upload-check", "v1")
+out <- saveVersion("test-R", "basic", "v1")
 list.files(out, recursive=TRUE, all.files=TRUE)
 
 }

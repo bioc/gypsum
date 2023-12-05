@@ -20,7 +20,7 @@ String containing the latest version of the project.
 Fetch the latest version of a project's asset.
 }
 \examples{
-fetchLatest("test-R", "upload-check")
+fetchLatest("test-R", "basic")
 
 }
 \author{

@@ -45,7 +45,7 @@ If missing, this can be assumed to be \code{FALSE}.
 Fetch the summary for a version of an asset of a project.
 }
 \examples{
-fetchSummary("test-R", "upload-check", "v1")
+fetchSummary("test-R", "basic", "v1")
 
 }
 \author{

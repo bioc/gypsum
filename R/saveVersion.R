@@ -22,7 +22,7 @@
 #' \code{\link{cacheDirectory}}, for file caching.
 #' 
 #' @examples
-#' out <- saveVersion("test-R", "upload-check", "v1")
+#' out <- saveVersion("test-R", "basic", "v1")
 #' list.files(out, recursive=TRUE, all.files=TRUE)
 #' 
 #' @export

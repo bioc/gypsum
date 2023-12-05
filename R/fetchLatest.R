@@ -11,7 +11,7 @@
 #' @author Aaron Lun
 #'
 #' @examples
-#' fetchLatest("test-R", "upload-check")
+#' fetchLatest("test-R", "basic")
 #'
 #' @export
 #' @importFrom jsonlite fromJSON

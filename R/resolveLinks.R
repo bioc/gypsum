@@ -7,14 +7,19 @@
 #' @param version String containing the version name.
 #' @param cache String containing the path to the cache directory.
 #' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
+#' @param overwrite Logical scalar indicating whether to replace existing files at the linked-from paths.
 #' 
 #' @return \code{NULL} is returned on successful completion.
 #'
 #' @author Aaron Lun
 #'
 #' @examples
-#' saveVersion("test-R", "upload-check", "v1", relink=FALSE)
-#' resolveLinks("test-R", "upload-check", "v1")
+#' cache <- tempfile()
+#' saveVersion("test-R", "basic", "v3", relink=FALSE, cache=cache)
+#' list.files(cache, recursive=TRUE, all.files=TRUE)
+#' 
+#' resolveLinks("test-R", "basic", "v3", cache=cache)
+#' list.files(cache, recursive=TRUE, all.files=TRUE)
 #'
 #' @export
 resolveLinks <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, config=publicS3Config()) {

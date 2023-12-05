@@ -22,6 +22,8 @@ resolveLinks(
 
 \item{cache}{String containing the path to the cache directory.}
 
+\item{overwrite}{Logical scalar indicating whether to replace existing files at the linked-from paths.}
+
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }
 \value{
@@ -31,8 +33,12 @@ resolveLinks(
 Create hard links (or copies, if filesystem links are not supported) for linked-from files to their link destinations.
 }
 \examples{
-saveVersion("test-R", "upload-check", "v1", relink=FALSE)
-resolveLinks("test-R", "upload-check", "v1")
+cache <- tempfile()
+saveVersion("test-R", "basic", "v3", relink=FALSE, cache=cache)
+list.files(cache, recursive=TRUE, all.files=TRUE)
+
+resolveLinks("test-R", "basic", "v3", cache=cache)
+list.files(cache, recursive=TRUE, all.files=TRUE)
 
 }
 \author{

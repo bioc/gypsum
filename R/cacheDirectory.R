@@ -23,6 +23,7 @@
 #'
 #' @export
 #' @import httr2
+#' @importFrom tools R_user_dir
 cacheDirectory <- (function() {
     current <- Sys.getenv("GYPSUM_CACHE_DIR", tools::R_user_dir("gypsum", "cache"))
     function(dir) {

@@ -16,7 +16,7 @@
 #' }
 #' 
 #' @examples
-#' fetchSummary("test-R", "upload-check", "v1")
+#' fetchSummary("test-R", "basic", "v1")
 #' 
 #' @export
 fetchSummary <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {

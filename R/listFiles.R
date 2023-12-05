@@ -16,7 +16,7 @@
 #' @return Character vector of relative paths of files associated with the versioned asset.
 #'
 #' @examples
-#' listFiles("test-R", "upload-check", "v1")
+#' listFiles("test-R", "basic", "v1")
 #' 
 #' @export
 #' @importFrom aws.s3 get_bucket
