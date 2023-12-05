@@ -10,6 +10,7 @@
 #' @param overwrite Logical scalar indicating whether to overwrite existing files in the cache.
 #' If \code{FALSE} and the files already exist in \code{cache}, the download is skipped.
 #' @param concurrent Integer specifying the number of concurrent downloads.
+#' @param relink Logical scalar indicating whether links should be resolved, see \code{\link{resolveLinks}}.
 #' 
 #' @return The version's files are downloaded to the local file system, and the path to the local subdirectory is returned.
 #'
@@ -25,7 +26,7 @@
 #' list.files(out, recursive=TRUE, all.files=TRUE)
 #' 
 #' @export
-saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, concurrent=1, config=publicS3Config()) {
+saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, relink=TRUE, concurrent=1, config=publicS3Config()) {
     acquire_lock(cache, project, asset, version)
     on.exit(release_lock(project, asset, version))
     destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)
@@ -33,7 +34,7 @@ saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwri
     # If this version's directory was previously cached in its complete form, we skip it.
     completed <- file.path(cache, "status", project, asset, version, "COMPLETE")
 
-    if (!file.exists(completed)) {
+    if (!file.exists(completed) || overwrite) {
         listing <- listFiles(project, asset, version, config=config)
         FUN <- function(x) save_file(x, file.path(destination, x), overwrite=overwrite, config=config, precheck=FALSE)
 
@@ -43,6 +44,10 @@ saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwri
             cl <- makeCluster(concurrent)
             on.exit(stopCluster(cl))
             parLapply(cl, listing, FUN)
+        }
+
+        if (relink) {
+            resolveLinks(project, asset, version, cache=cache, overwrite=overwrite, config=config)
         }
 
         # Marking it as complete.

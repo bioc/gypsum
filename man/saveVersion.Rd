@@ -10,6 +10,7 @@ saveVersion(
   version,
   cache = cacheDirectory(),
   overwrite = FALSE,
+  relink = TRUE,
   concurrent = 1,
   config = publicS3Config()
 )
@@ -25,6 +26,8 @@ saveVersion(
 
 \item{overwrite}{Logical scalar indicating whether to overwrite existing files in the cache.
 If \code{FALSE} and the files already exist in \code{cache}, the download is skipped.}
+
+\item{relink}{Logical scalar indicating whether links should be resolved, see \code{\link{resolveLinks}}.}
 
 \item{concurrent}{Integer specifying the number of concurrent downloads.}
 
