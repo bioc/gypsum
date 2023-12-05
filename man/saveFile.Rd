@@ -9,9 +9,8 @@ saveFile(
   asset,
   version,
   path,
-  destination = NULL,
   cache = cacheDirectory(),
-  overwrite = NULL,
+  overwrite = FALSE,
   precheck = TRUE,
   config = publicS3Config()
 )
@@ -25,15 +24,10 @@ saveFile(
 
 \item{path}{String containing the relative path to the file inside the version.}
 
-\item{destination}{String containing the destination path on the local filesystem. 
-If \code{NULL}, a path inside \code{cache} is used.}
+\item{cache}{String containing the path to the cache directory.}
 
-\item{cache}{String containing the path to the cache directory.
-Only used if \code{destination=NULL}.}
-
-\item{overwrite}{Logical scalar indicating whether to overwrite an existing file at \code{destination}.
-If \code{FALSE} and \code{destination} exists, the download is skipped.
-Defaults to \code{!is.null(destination)}, so no extra downloads are performed if the file is already cached.}
+\item{overwrite}{Logical scalar indicating whether to overwrite an existing file in \code{cache}.
+If \code{FALSE} and the file exists in \code{cache}, the download is skipped.}
 
 \item{precheck}{Whether to check if the file exists in the bucket before attempting a download.
 This may be omitted if the file is known to exist.}
@@ -41,8 +35,7 @@ This may be omitted if the file is known to exist.}
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }
 \value{
-The file is downloaded to the local file system.
-The destination file path is invisibly returned.
+The file is downloaded to the local file system. The destination file path is returned.
 }
 \description{
 Download a file from the gypsum bucket, for a version of an asset of a project.
@@ -53,7 +46,7 @@ readLines(out)
 
 }
 \seealso{
-\code{\link{saveFiles}}, to save all files with the same prefix.
+\code{\link{saveVersion}}, to save all files with the same prefix.
 
 \code{\link{cacheDirectory}}, for file caching.
 }
