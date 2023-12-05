@@ -56,6 +56,8 @@ get_file <- function(path, config, precheck) {
 #' @importFrom aws.s3 save_object object_exists
 save_file <- function(path, destination, overwrite, config, precheck) {
     if (overwrite || !file.exists(destination)) {
+        dir.create(dirname(destination), recursive=TRUE, showWarnings=FALSE)
+
         args <- create_arguments(path, config)
         if (precheck && !do.call(object_exists, args)) {
             stop("'", path, "' does not exist in the bucket")
@@ -66,17 +68,29 @@ save_file <- function(path, destination, overwrite, config, precheck) {
     }
 }
 
+BUCKET_CACHE_NAME <- 'bucket'
+
 #' @importFrom jsonlite fromJSON
-get_cacheable_json <- function(components, cache, config, overwrite, precheck) {
-    path <- paste(components, collapse="/")
+#' @importFrom filelock unlock
+get_cacheable_json <- function(project, asset, version, path, cache, config, overwrite, precheck) {
+    path <- paste(project, asset, version, path, sep="/")
     if (is.null(cache)) {
         out <- get_file(path, config=config, precheck=precheck)
         out <- rawToChar(out)
     } else {
-        out <- do.call(file.path, c(list(cache, "bucket"), as.list(components)))
+        out <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
+        lck <- create_lock(project, asset, version)
+        on.exit(unlock(lck))
         save_file(path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
     }
     fromJSON(out, simplifyVector=FALSE)
+}
+
+#' @importFrom filelock lock
+create_lock <- function(project, asset, version) {
+    lockloc <- file.path(cacheDirectory(), "status", project, asset, version, "LOCK")
+    dir.create(dirname(lockloc), recursive=TRUE, showWarnings=FALSE)
+    lock(lockloc)
 }
 
 #' @importFrom aws.s3 get_bucket

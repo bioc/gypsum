@@ -12,13 +12,13 @@ Imports:
     httr2,
     jsonlite,
     aws.s3,
-    parallel
+    parallel,
+    filelock
 Suggests:
     knitr,
     rmarkdown,
     testthat,
     BiocStyle,
-    digest,
-    filelock
+    digest
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

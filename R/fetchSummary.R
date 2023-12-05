@@ -21,7 +21,10 @@
 #' @export
 fetchSummary <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {
     out <- get_cacheable_json(
-        c(project, asset, version, "..summary"), 
+        project, 
+        asset, 
+        version, 
+        "..summary", 
         cache=cache, 
         overwrite=overwrite,
         precheck=precheck,

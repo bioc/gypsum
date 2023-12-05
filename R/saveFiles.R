@@ -32,13 +32,15 @@
 #' list.files(out, recursive=TRUE, all.files=TRUE)
 #' 
 #' @export
+#' @importFrom filelock unlock
 saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, overwrite=NULL, concurrent=1, config=publicS3Config()) {
     if (is.null(destination)) {
         if (is.null(overwrite)) {
             overwrite <- FALSE
         }
-        destination <- file.path(cacheDirectory(), "bucket", project, asset, version)
-        dir.create(destination, recursive=TRUE, showWarnings=FALSE)
+        lck <- create_lock(project, asset, version)
+        on.exit(unlock(lck))
+        destination <- file.path(cacheDirectory(), BUCKET_CACHE_NAME, project, asset, version)
     }
 
     listing <- listFiles(project, asset, version, prefix=prefix, config=config)

@@ -35,8 +35,9 @@ saveFile <- function(project, asset, version, path, destination=NULL, overwrite=
         if (is.null(overwrite)) {
             overwrite <- FALSE
         }
-        destination <- file.path(cacheDirectory(), "bucket", project, asset, version, path)
-        dir.create(dirname(destination), recursive=TRUE, showWarnings=FALSE)
+        destination <- do.call(file.path, c(list(cacheDirectory(), BUCKET_CACHE_NAME, project, asset, version), split(path, "/")[[1]]))
+        lck <- create_lock(project, asset, version)
+        on.exit(unlock(lck))
     }
 
     object <- paste0(project, "/", asset, "/", version, "/", path)
