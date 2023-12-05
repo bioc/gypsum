@@ -5,16 +5,16 @@
 \alias{setAccessToken}
 \title{Get and set GitHub access tokens}
 \usage{
-accessToken(full = FALSE, request = TRUE)
+accessToken(full = FALSE, request = TRUE, cache = cacheDirectory())
 
 setAccessToken(
   token,
-  disk.cache = TRUE,
   app.url = restUrl(),
   app.key = NULL,
   app.secret = NULL,
   github.url = "https://api.github.com",
-  user.agent = NULL
+  user.agent = NULL,
+  cache = cacheDirectory()
 )
 }
 \arguments{
@@ -22,13 +22,13 @@ setAccessToken(
 
 \item{request}{Logical scalar indicating whether to request a new token if no cached token is available or if the current token has expired.}
 
+\item{cache}{String containing a path to the cache directory, to store the token across R sessions.
+If \code{NULL}, the token is not cached to (or read from) disk, which improves security on shared filesystems.}
+
 \item{token}{String containing a GitHub personal access token.
 This should have the \code{"read:org"} and \code{"read:user"} scopes.
 If missing, the user will be prompted to use GitHub's Oauth web application flow to acquire a token.
 If \code{NULL}, any existing tokens are cleared from cache.}
-
-\item{disk.cache}{Logical scalar indicating whether to cache the token to disk.
-If \code{FALSE}, the token is only cached in memory, which can be helpful for security purposes.}
 
 \item{app.url}{String containing a URL of the gypsum REST API.
 This is used to obtain \code{app.key} and \code{app.secret} if either are \code{NULL}.}

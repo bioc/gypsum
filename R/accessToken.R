@@ -8,8 +8,6 @@
 #' This should have the \code{"read:org"} and \code{"read:user"} scopes.
 #' If missing, the user will be prompted to use GitHub's Oauth web application flow to acquire a token.
 #' If \code{NULL}, any existing tokens are cleared from cache.
-#' @param disk.cache Logical scalar indicating whether to cache the token to disk.
-#' If \code{FALSE}, the token is only cached in memory, which can be helpful for security purposes.
 #' @param github.url String containing the URL for the GitHub API.
 #' This is used to acquire more information about the token.
 #' @param app.key String containing the key for a GitHub Oauth app.
@@ -17,6 +15,8 @@
 #' @param app.url String containing a URL of the gypsum REST API.
 #' This is used to obtain \code{app.key} and \code{app.secret} if either are \code{NULL}.
 #' @param user.agent String specifying the user agent for queries to various endpoints.
+#' @param cache String containing a path to the cache directory, to store the token across R sessions.
+#' If \code{NULL}, the token is not cached to (or read from) disk, which improves security on shared filesystems. 
 #'
 #' @return
 #' \code{setAccessToken} sets the access token and invisibly returns a list containing:
@@ -44,14 +44,13 @@ NULL
 token.cache <- new.env()
 token.cache$auth.info <- NULL
 
-#' @importFrom tools R_user_dir
-token_cache_path <- function() {
-    file.path(cacheDirectory(), "credentials", "token.txt")
+token_cache_path <- function(cache) {
+    file.path(cache, "credentials", "token.txt")
 }
 
 #' @export
 #' @rdname accessToken
-accessToken <- function(full = FALSE, request=TRUE) {
+accessToken <- function(full = FALSE, request=TRUE, cache=cacheDirectory()) {
     if (full) {
         OFn <- identity
     } else {
@@ -68,21 +67,23 @@ accessToken <- function(full = FALSE, request=TRUE) {
         }
     }
 
-    cache.path <- token_cache_path()
-    if (file.exists(cache.path)) {
-        dump <- readLines(cache.path)
-        exp <- as.double(dump[3])
-        if (exp > Sys.time() + expiry_leeway) {
-            info <- list(token=dump[1], name=dump[2], expires=exp)
-            token.cache$auth.info <- info
-            return(OFn(info))
-        } else {
-            unlink(cache.path)
+    if (!is.null(cache)) {
+        cache.path <- token_cache_path(cache)
+        if (file.exists(cache.path)) {
+            dump <- readLines(cache.path)
+            exp <- as.double(dump[3])
+            if (exp > Sys.time() + expiry_leeway) {
+                info <- list(token=dump[1], name=dump[2], expires=exp)
+                token.cache$auth.info <- info
+                return(OFn(info))
+            } else {
+                unlink(cache.path)
+            }
         }
     }
 
     if (request) {
-        payload <- setAccessToken()
+        payload <- setAccessToken(cache=cache)
         OFn(payload) # making it visible.
     } else {
         NULL
@@ -92,11 +93,15 @@ accessToken <- function(full = FALSE, request=TRUE) {
 #' @export
 #' @rdname accessToken
 #' @import httr2
-setAccessToken <- function(token, disk.cache=TRUE, app.url=restUrl(), app.key = NULL, app.secret = NULL, github.url="https://api.github.com", user.agent=NULL) {
-    cache.path <- token_cache_path()
+setAccessToken <- function(token, app.url=restUrl(), app.key = NULL, app.secret = NULL, github.url="https://api.github.com", user.agent=NULL, cache=cacheDirectory()) {
+    cache.path <- NULL
+    if (!is.null(cache)) {
+        cache.path <- token_cache_path(cache)
+    }
+
     if (!missing(token) && is.null(token)) {
         token.cache$auth.info <- NULL
-        if (disk.cache) { # don't write to disk if cache=FALSE.
+        if (!is.null(cache.path)) {
             unlink(cache.path)
         }
         return(invisible(NULL))
@@ -134,7 +139,7 @@ setAccessToken <- function(token, disk.cache=TRUE, app.url=restUrl(), app.key = 
         expiry <- as.double(as.POSIXct(paste(frags[1], frags[2]), tz=frags[3]))
     }
 
-    if (disk.cache) {
+    if (!is.null(cache.path)) {
         dir.create(dirname(cache.path), showWarnings=FALSE, recursive=TRUE)
         writeLines(c(token, name, expiry), con=cache.path)
         Sys.chmod(cache.path, mode="0600") # prevent anyone else from reading this on shared file systems.
