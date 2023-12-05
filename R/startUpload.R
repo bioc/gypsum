@@ -89,7 +89,7 @@ startUpload <- function(project, asset, version, files, links=NULL, deduplicate=
             md5sum = vapply(targets, function(x) digest::digest(file=x, algo="md5"), "", USE.NAMES=FALSE),
             dedup = rep(deduplicate, length(targets))
         )
-    } else if (!("dedup" %in% names(files))) {
+    } else if (!("dedup" %in% colnames(files))) {
         files$dedup <- rep(deduplicate, nrow(files))
     }
 
@@ -108,9 +108,9 @@ startUpload <- function(project, asset, version, files, links=NULL, deduplicate=
     }
 
     if (!is.null(links)) {
-        links <- vector("list", nrow(links)) 
+        out.links <- vector("list", nrow(links)) 
         for (i in seq_len(nrow(links))) {
-            links[i] <- list(
+            out.links[[i]] <- list(
                 type = "link",
                 path = links$from.path[i],
                 link = list(
@@ -121,7 +121,7 @@ startUpload <- function(project, asset, version, files, links=NULL, deduplicate=
                 )
             )
         }
-        formatted <- c(formatted, links)
+        formatted <- c(formatted, out.links)
     }
 
     url <- chomp_url(url)
