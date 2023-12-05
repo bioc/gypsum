@@ -36,12 +36,13 @@
 #' @export
 #' @importFrom filelock unlock
 saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, cache=cacheDirectory(), overwrite=NULL, concurrent=1, config=publicS3Config()) {
+    if (is.null(overwrite)) {
+        overwrite <- !is.null(destination)
+    }
+
     skip <- FALSE
     completed <- NULL
     if (is.null(destination)) {
-        if (is.null(overwrite)) {
-            overwrite <- FALSE
-        }
         lck <- create_lock(cache, project, asset, version)
         on.exit(unlock(lck))
         destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)

@@ -33,10 +33,11 @@
 #' 
 #' @export
 saveFile <- function(project, asset, version, path, destination=NULL, cache=cacheDirectory(), overwrite=NULL, precheck=TRUE, config=publicS3Config()) {
+    if (is.null(overwrite)) {
+        overwrite <- !is.null(destination)
+    }
+
     if (is.null(destination)) {
-        if (is.null(overwrite)) {
-            overwrite <- FALSE
-        }
         destination <- do.call(file.path, c(list(cache, BUCKET_CACHE_NAME, project, asset, version), split(path, "/")[[1]]))
         lck <- create_lock(cache, project, asset, version)
         on.exit(unlock(lck))
