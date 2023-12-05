@@ -34,6 +34,8 @@
 #' @export
 #' @importFrom filelock unlock
 saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, overwrite=NULL, concurrent=1, config=publicS3Config()) {
+    skip <- FALSE
+    completed <- NULL
     if (is.null(destination)) {
         if (is.null(overwrite)) {
             overwrite <- FALSE
@@ -41,17 +43,31 @@ saveFiles <- function(project, asset, version, prefix=NULL, destination=NULL, ov
         lck <- create_lock(project, asset, version)
         on.exit(unlock(lck))
         destination <- file.path(cacheDirectory(), BUCKET_CACHE_NAME, project, asset, version)
+
+        # If this version's directory was previously cached in its complete form, we skip it.
+        if (is.null(prefix)) {
+            completed <- file.path(cacheDirectory(), "status", project, asset, version, "COMPLETE")
+            skip <- file.exists(completed)
+        }
     }
 
-    listing <- listFiles(project, asset, version, prefix=prefix, config=config)
-    FUN <- function(x) save_file(x, file.path(destination, x), overwrite=overwrite, config=config, precheck=FALSE)
+    if (!skip) {
+        listing <- listFiles(project, asset, version, prefix=prefix, config=config)
+        FUN <- function(x) save_file(x, file.path(destination, x), overwrite=overwrite, config=config, precheck=FALSE)
 
-    if (concurrent == 1L) {
-        lapply(listing, FUN)
-    } else {
-        cl <- makeCluster(concurrent)
-        on.exit(stopCluster(cl))
-        parLapply(cl, listing, FUN)
+        if (concurrent == 1L) {
+            lapply(listing, FUN)
+        } else {
+            cl <- makeCluster(concurrent)
+            on.exit(stopCluster(cl))
+            parLapply(cl, listing, FUN)
+        }
+
+        # Marking it as complete.
+        if (!is.null(completed)) {
+            dir.create(dirname(completed), recursive=TRUE, showWarnings=FALSE)
+            write(character(0), file=completed)
+        }
     }
 
     invisible(destination)
