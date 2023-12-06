@@ -1,0 +1,158 @@
+---
+title: Interacting with the gypsum REST API
+author:
+- name: Aaron Lun
+  email: infinite.monkeys.with.keyboards@gmail.com
+package: gypsum
+date: "Revised: December 5, 2023"
+output:
+  BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Hitting the gypsum API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE}
+library(BiocStyle)
+self <- Githubpkg("ArtifactDB/gypsum");
+knitr::opts_chunk$set(error=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Introduction
+
+The `r self` package implements an R client for the [API of the same name](https://gypsum-test.aaron-lun.workers.dev).
+This allows Bioconductor packages to easily store and retrieve data from the **gypsum** backend.
+It also provides mechanisms to allow package maintainers to easily manage upload authorizations and third-party contributions.
+Readers are referred to [API's documentation](https://github.com/ArtifactDB/gypsum-worker) for a description of the concepts;
+this guide will strictly focus on the usage of the `r self` package.
+
+# Reading files
+
+`r self` provides several convenience methods for reading from the **gypsum** bucket:
+
+```{r}
+library(gypsum)
+listAssets("test-R")
+listVersions("test-R", "basic")
+listFiles("test-R", "basic", "v1")
+
+out <- saveFile("test-R", "basic", "v1", "blah.txt")
+readLines(out)
+
+dir <- saveVersion("test-R", "basic", "v1")
+list.files(dir, all.files=TRUE, recursive=TRUE)
+```
+
+We can also fetch the summaries and manifests for each version of a project's assets.
+
+```{r}
+fetchManifest("test-R", "basic", "v1")
+fetchSummary("test-R", "basic", "v1")
+```
+
+All read operations involve a publicly accessible bucket so no authentication is required.
+
+# Uploading files
+
+To demonstrate, let's say we have a directory of files that we wish to upload to the backend.
+
+```{r}
+tmp <- tempfile()
+dir.create(tmp)
+write(file=file.path(tmp, "foo"), letters)
+write(file=file.path(tmp, "bar"), LETTERS)
+write(file=file.path(tmp, "whee"), 1:10)
+```
+
+We run the upload sequence of `startUpload()`, `uploadFiles()` and `completeUpload()`.
+This requires authentication via GitHub, which is usually prompted but can also be set beforehand via `setAccessToken()` (e.g., for batch jobs).
+
+```r
+init <- startUpload(
+    project=project_name,
+    asset=asset_name,
+    version=version_name,
+    files=list.files(tmp, recursive=TRUE),
+    directory=tmp
+)
+
+tryCatch({
+    uploadFiles(init, directory=tmp)
+    completeUpload(init)
+}, error=function(e) {
+    abortUpload(init) # clean up if the upload fails.
+    stop(e)
+})
+```
+
+More advanced developers may consider using `links=` in `startUpload()` to improve efficiency by deduplicating redundant files on the **gypsum** backend.
+We can also set `concurrent=` to parallelize the uploads in `uploadFiles()`.
+
+# Changing permissions
+
+Upload authorization is determined by each project's permissions, which are controlled by project owners.
+Both uploaders and owners are identified based on their GitHub logins:
+
+```{r}
+fetchPermissions("test-R")
+```
+
+Owners can add more uploaders (or owners) via the `setPermissions()` function.
+Uploaders can be scoped to individual assets or versions, and an expiry date may be attached to each authorization:
+
+```r
+setPermissions("test-R", uploaders=list(
+    list(
+        id="jkanche", 
+        until=Sys.time() + 24 * 60 * 60,
+        asset="jays-happy-fun-time",
+        version="1"
+    )
+))
+```
+
+Organizations may also be added in the permissions, in which case the authorization extends to all members of that organization.
+
+# Probational uploads
+
+Unless specified otherwise, all uploaders are considered to be "untrusted".
+Any uploads from such untrusted users are considered "probational" and must be approved by the project owners before they are considered complete.
+Alternatively, an owner may reject an upload, which deletes all the uploaded files from the backend.
+
+```r
+approveProbation("test-R", "third-party-upload", "good")
+rejectProbation("test-R", "third-party-upload", "bad")
+```
+
+An uploader can be trusted by setting `trusted=TRUE` in `setPermissions()`.
+Owners and trusted uploaders may still perform probational uploads (e.g., for testing) by setting `probation=TRUE` in `startUpload()`.
+
+# Administration
+
+Administrators of the **gypsum** instance can create projects with new permissions:
+
+```r
+createProject("my-new-project", 
+    owners="jkanche", 
+    uploaders=list(
+        list(
+            id="LTLA", 
+            asset="aarons-stuff"
+        )
+    )
+)
+```
+
+Administrators may also delete projects, assets or versions, though this should be done sparingly as it violates **gypsum**'s expectations of immutability.
+
+```r
+removeProject("my-new_project")
+```
+
+# Session information {-}
+
+```{r}
+sessionInfo()
+```
+
