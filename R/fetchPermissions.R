@@ -44,7 +44,12 @@ fetchPermissions <- function(project, config=publicS3Config()) {
     perms <- fromJSON(msg, simplifyVector=FALSE)
 
     # Converting everything to POSIX dates.
-    perms$uploaders <- sanitize_uploaders(perms$uploaders)
+    for (i in seq_along(perms$uploaders)) {
+        current <- perms$uploaders[[i]]
+        if ("until" %in% names(current)) {
+            perms$uploaders[[i]]$until <- .cast_datetime(current$until)
+        }
+    }
 
     perms
 }

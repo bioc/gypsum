@@ -37,26 +37,26 @@
 setPermissions <- function(project, owners=NULL, uploaders=NULL, append=TRUE, url=restUrl(), token=accessToken()) {
     url <- chomp_url(url)
 
-    if (!is.null(uploaders)) {
-        uploaders <- sanitize_uploaders(uploaders)
-    }
-
     perms <- list()
     if (append) {
         old.perms <- fetchPermissions(project)
         if (!is.null(owners)) {
-            perms$owners <- I(union(old.perms$owners, owners))
+            perms$owners <- as.list(union(unlist(old.perms$owners), owners))
         }
         if (!is.null(uploaders)) {
             perms$uploaders <- c(old.perms$uploaders, uploaders)
         }
     } else {
         if (!is.null(owners)) {
-            perms$owners <- owners
+            perms$owners <- as.list(owners)
         }
         if (!is.null(uploaders)) {
             perms$uploaders <- uploaders 
         }
+    }
+
+    if (!is.null(perms$uploaders)) {
+        perms$uploaders <- sanitize_uploaders(perms$uploaders)
     }
 
     req <- request(paste0(url, "/permissions/", uenc(project)))
