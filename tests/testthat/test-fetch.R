@@ -26,8 +26,9 @@ test_that("fetchSummary works as expected", {
     expect_s3_class(xx$upload_finish, "POSIXct")
 
     # Uses the cache.
+    sumpath <- file.path(cache, "bucket", "test-R", "basic", "v1", "..summary")
     writeLines(
-        con=file.path(cache, "bucket", "test-R", "basic", "v1", "..summary"), 
+        con=sumpath,
         '{ "upload_user_id": "adrian", "upload_start": "2022-01-01T01:01:01Z", "upload_finish": "2022-01-01T01:01:02Z" }'
     )
     xx <- fetchSummary("test-R", "basic", "v1", cache=cache)
@@ -36,6 +37,15 @@ test_that("fetchSummary works as expected", {
     # Unless we overwrite it.
     xx <- fetchSummary("test-R", "basic", "v1", cache=cache, overwrite=TRUE)
     expect_identical(xx$upload_user_id, original.user)
+
+    # Self-deletes from the cache if it's on probation.
+    writeLines(
+        con=sumpath,
+        '{ "upload_user_id": "adrian", "upload_start": "2022-01-01T01:01:01Z", "upload_finish": "2022-01-01T01:01:02Z", "on_probation": true }'
+    )
+    xx <- fetchSummary("test-R", "basic", "v1", cache=cache)
+    expect_true(xx$on_probation)
+    expect_false(file.exists(sumpath))
 
     expect_error(fetchSummary('test-R', 'basic', 'non-existent', cache=cache), "does not exist")
 })

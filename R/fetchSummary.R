@@ -30,7 +30,14 @@ fetchSummary <- function(project, asset, version, cache=cacheDirectory(), overwr
         precheck=precheck,
         config=config
     )
+
     out$upload_start <- .cast_datetime(out$upload_start)
     out$upload_finish <- .cast_datetime(out$upload_finish)
+
+    if (isTRUE(out$on_probation) && !is.null(cache)) {
+        # Remove cached entry because it might not be accurate in subsequent calls.
+        unlink(file.path(cache, BUCKET_CACHE_NAME, project, asset, version, "..summary"))
+    }
+
     out
 }
