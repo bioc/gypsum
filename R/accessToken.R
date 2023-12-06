@@ -108,6 +108,10 @@ setAccessToken <- function(token, app.url=restUrl(), app.key = NULL, app.secret 
     }
 
     if (missing(token)) {
+        if (!interactive()) {
+            stop("cannot request a new access token in a non-interactive session")
+        }
+
         if (is.null(app.key) || is.null(app.secret)) {
             req <- request(paste0(chomp_url(app.url), "/credentials/github-app"))
             req <- req_user_agent(req, user.agent)
