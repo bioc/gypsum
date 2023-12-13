@@ -23,6 +23,9 @@ Fetch the latest version of a project's asset.
 fetchLatest("test-R", "basic")
 
 }
+\seealso{
+\code{\link{refreshLatest}}, to refresh the latest version.
+}
 \author{
 Aaron Lun
 }

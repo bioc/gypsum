@@ -13,6 +13,9 @@
 #' @examples
 #' fetchLatest("test-R", "basic")
 #'
+#' @seealso
+#' \code{\link{refreshLatest}}, to refresh the latest version.
+#'
 #' @export
 #' @importFrom jsonlite fromJSON
 fetchLatest <- function(project, asset, config=publicS3Config()) {
