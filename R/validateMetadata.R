@@ -2,8 +2,11 @@
 #'
 #' Validate metadata against a JSON schema for a database, to ensure that it can be successfully included in the database's index.
 #'
-#' @param metadata Metadata, usually a named list.
+#' @param metadata Metadata to be checked.
+#' This is usually an R object like a named list, but may also be a JSON-formatted string.
 #' @param schema String containing a path to a schema.
+#' @param stringify Logical scalar indicating whether to convert \code{metadata} to a JSON-formatted string.
+#' Defaults to \code{TRUE} if \code{metadata} is not already a string.
 #'
 #' @return NULL is invisibly returned upon successful validation.
 #'
@@ -27,7 +30,13 @@
 #'
 #' @export
 #' @importFrom jsonlite toJSON
-validateMetadata <- function(metadata, schema=fetchMetadataSchema()) {
-    jsonvalidate::json_validate(toJSON(metadata, auto_unbox=TRUE), schema, error=TRUE, engine="ajv")
+validateMetadata <- function(metadata, schema=fetchMetadataSchema(), stringify=NULL) {
+    if (is.null(stringify)) {
+        stringify <- !is.character(metadata)
+    }
+    if (stringify) {
+        metadata <- toJSON(metadata, auto_unbox=TRUE)
+    }
+    jsonvalidate::json_validate(metadata, schema, error=TRUE, engine="ajv")
     invisible(NULL)
 }

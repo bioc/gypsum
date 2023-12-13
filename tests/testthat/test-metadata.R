@@ -34,6 +34,7 @@ test_that("validateMetadata works as expected", {
 
     schema <- fetchMetadataSchema(cache=cache)
     expect_error(validateMetadata(metadata, schema), NA)
+    expect_error(validateMetadata(jsonlite::toJSON(metadata, auto_unbox=TRUE), schema), NA) # stringification works as expected.
 
     metadata$bioconductor_version <- NULL
     expect_error(validateMetadata(metadata, schema), "bioconductor_version")
