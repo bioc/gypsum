@@ -19,6 +19,7 @@ Suggests:
     rmarkdown,
     testthat,
     BiocStyle,
-    digest
+    digest,
+    jsonvalidate
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

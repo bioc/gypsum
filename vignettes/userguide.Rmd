@@ -128,6 +128,37 @@ rejectProbation("test-R", "third-party-upload", "bad")
 An uploader can be trusted by setting `trusted=TRUE` in `setPermissions()`.
 Owners and trusted uploaders may still perform probational uploads (e.g., for testing) by setting `probation=TRUE` in `startUpload()`.
 
+# Validating metadata
+
+Databases can operate downstream of the **gypsum** backend to create performant search indices, usually based on special metadata files.
+`r self` provides some utilities to check that metadata follows the JSON schema of some known downstream databases.
+
+```{r}
+# Fetching for the gypsum-Bioconductor database
+schema <- fetchMetadataSchema("bioconductor")
+cat(head(readLines(schema)), sep="\n")
+```
+
+Uploaders can verify that their metadata respects this schema via the `validateMetadata()` function.
+This ensures that the uploaded files can be successfully indexed by the database, given that the **gypsum** backend itself applies no such checks.
+
+```{r}
+metadata <- list(                           
+    title="Fatherhood",
+    description="Luke ich bin dein Vater.",
+    sources=list(
+       list(provider="GEO", id="GSE12345")
+    ),
+    taxonomy_id=list("9606"),
+    genome=list("GRCm38"),
+    maintainer_name="Darth Vader",
+    maintainer_email="vader@empire.gov",
+    bioconductor_version="3.10"
+)
+
+validateMetadata(metadata, schema)
+```
+
 # Administration
 
 Administrators of the **gypsum** instance can create projects with new permissions:
