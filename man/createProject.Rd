@@ -8,6 +8,9 @@ createProject(
   project,
   owners,
   uploaders = list(),
+  baseline = NULL,
+  growth = NULL,
+  year = NULL,
   url = restUrl(),
   token = accessToken()
 )
@@ -19,6 +22,15 @@ createProject(
 
 \item{uploaders}{List specifying the authorized uploaders for this project.
 See the \code{uploaders} field in the \code{\link{fetchPermissions}} return value for the expected format.}
+
+\item{baseline}{Numeric scalar specifying the baseline quota in bytes.
+If \code{NULL}, the backend's default is used.}
+
+\item{growth}{Numeric scalar specifying the quota's annual growth rate in bytes.
+If \code{NULL}, the backend's default is used.}
+
+\item{year}{Integer scalar specifying the year of the project creation.
+If \code{NULL}, the backend's default is used - this should be the current year.}
 
 \item{url}{String containing the URL of the gypsum REST API.}
 
