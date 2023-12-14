@@ -44,11 +44,17 @@ dir <- saveVersion("test-R", "basic", "v1")
 list.files(dir, all.files=TRUE, recursive=TRUE)
 ```
 
-We can also fetch the summaries and manifests for each version of a project's assets.
+We can fetch the summaries and manifests for each version of a project's assets.
 
 ```{r}
 fetchManifest("test-R", "basic", "v1")
 fetchSummary("test-R", "basic", "v1")
+```
+
+We can get the latest version of an asset:
+
+```{r}
+fetchLatest("test-R", "basic")
 ```
 
 All read operations involve a publicly accessible bucket so no authentication is required.
@@ -128,6 +134,25 @@ rejectProbation("test-R", "third-party-upload", "bad")
 An uploader can be trusted by setting `trusted=TRUE` in `setPermissions()`.
 Owners and trusted uploaders may still perform probational uploads (e.g., for testing) by setting `probation=TRUE` in `startUpload()`.
 
+# Inspecting the quota
+
+Each project has a quota that specifies how much storage space is available for uploaders.
+The quota is computed as a linear function of `baseline + growth_rate * (NOW - year)`,
+which provides some baseline storage that grows over time.
+
+```{r}
+fetchQuota("test-R")
+```
+
+Once the project's contents exceed this quota, all uploads are blocked.
+The current usage of the project can be easily inspected:
+
+```{r}
+fetchUsage("test-R")
+```
+
+Changes to the quota must be performed by administrators, see [below](#administration).
+
 # Validating metadata
 
 Databases can operate downstream of the **gypsum** backend to create performant search indices, usually based on special metadata files.
@@ -173,6 +198,24 @@ createProject("my-new-project",
         )
     )
 )
+```
+
+They can alter the quota parameters for a project:
+
+```r
+setQuota("my-new-project",
+    baseline=10 * 2^30,
+    growth=5 * 2^30,
+    year=2019
+)
+```
+
+They can manually refresh the latest version for an asset, and the quota usage for a project.
+This is required on very rare occasions where there are simultaneous uploads to the same project.
+
+```r
+refreshLatest("test-R", "basic")
+refreshQuota("my-new-project", "some-asset")
 ```
 
 Administrators may also delete projects, assets or versions, though this should be done sparingly as it violates **gypsum**'s expectations of immutability.
