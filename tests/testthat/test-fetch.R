@@ -54,6 +54,10 @@ test_that("fetchLatest works as expected", {
     expect_identical(fetchLatest("test-R", "basic"), "v3")
 })
 
+test_that("fetchUsage works as expected", {
+    expect_true(fetchUsage("test-R") > 0)
+})
+
 test_that("fetchPermissions works as expected", {
     perms <- fetchPermissions("test-R")
     expect_type(perms$owners, "list")

@@ -27,5 +27,5 @@ refreshUsage <- function(project, url=restUrl(), token=accessToken()) {
     req <- req_auth_bearer_token(req, token)
     req <- req_error(req, body = function(res) resp_body_json(res)$reason)
     resp <- req_perform(req)
-    invisible(req_body_json(resp)$total)
+    invisible(resp_body_json(resp)$total)
 }
