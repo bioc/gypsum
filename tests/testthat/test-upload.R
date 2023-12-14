@@ -94,7 +94,6 @@ test_that("aborting the upload works correctly", {
         asset="upload", 
         version="1", 
         files=character(),
-        directory=tmp,
         token=gh_token
     )
     expect_identical(length(init$file_urls), 0L)
