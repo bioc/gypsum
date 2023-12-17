@@ -18,6 +18,21 @@ test_that("fetchMetadataSchema works as expected", {
     expect_error(jsonlite::fromJSON(path), NA)
 })
 
+test_that("fetchMetadataDatabase works as expected", {
+    path <- fetchMetadataDatabase(cache=cache)
+    expect_true(file.info(path)$size > 0)
+    expect_type(gypsum:::last_check$req_time, "double")
+    expect_true(!is.na(gypsum:::last_check$req_time))
+    expect_type(gypsum:::last_check$mod_time, "double")
+    expect_true(!is.na(gypsum:::last_check$mod_time))
+
+    # Uses the cache.
+    writeLines(con=path, "FOO")
+    path2 <- fetchMetadataDatabase(cache=cache)
+    expect_identical(path, path2)
+    expect_identical(readLines(path), "FOO")
+})
+
 test_that("validateMetadata works as expected", {
     metadata <- list(                           
         title="Fatherhood",

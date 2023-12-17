@@ -1,6 +1,7 @@
-#' Validate metadata against a database schema
+#' Validate metadata against a JSON schema
 #'
-#' Validate metadata against a JSON schema for a database, to ensure that it can be successfully included in the database's index.
+#' Validate metadata against a JSON schema for a SQLite database.
+#' This ensures that it can be successfully inserted in the database in downstream indexing steps.
 #'
 #' @param metadata Metadata to be checked.
 #' This is usually an R object like a named list, but may also be a JSON-formatted string.
@@ -11,6 +12,11 @@
 #' @return NULL is invisibly returned upon successful validation.
 #'
 #' @author Aaron Lun
+#'
+#' @seealso
+#' \code{\link{fetchMetadataSchema}}, to get the JSON schemas.
+#'
+#' \code{\link{fetchMetadataDatabase}}, to obtain the SQLite database files.
 #'
 #' @examples
 #' metadata <- list(

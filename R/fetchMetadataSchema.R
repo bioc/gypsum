@@ -18,6 +18,8 @@
 #'
 #' @seealso
 #' \code{\link{validateMetadata}}, to validate metadata against a chosen schema.
+#'
+#' \code{\link{fetchMetadataDatabase}}, to obtain the SQLite database of metadata.
 #' 
 #' @examples
 #' fetchMetadataSchema()

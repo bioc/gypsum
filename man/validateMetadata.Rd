@@ -2,7 +2,7 @@
 % Please edit documentation in R/validateMetadata.R
 \name{validateMetadata}
 \alias{validateMetadata}
-\title{Validate metadata against a database schema}
+\title{Validate metadata against a JSON schema}
 \usage{
 validateMetadata(metadata, schema = fetchMetadataSchema(), stringify = NULL)
 }
@@ -19,7 +19,8 @@ Defaults to \code{TRUE} if \code{metadata} is not already a string.}
 NULL is invisibly returned upon successful validation.
 }
 \description{
-Validate metadata against a JSON schema for a database, to ensure that it can be successfully included in the database's index.
+Validate metadata against a JSON schema for a SQLite database.
+This ensures that it can be successfully inserted in the database in downstream indexing steps.
 }
 \examples{
 metadata <- list(
@@ -37,6 +38,11 @@ metadata <- list(
 
 validateMetadata(metadata)
 
+}
+\seealso{
+\code{\link{fetchMetadataSchema}}, to get the JSON schemas.
+
+\code{\link{fetchMetadataDatabase}}, to obtain the SQLite database files.
 }
 \author{
 Aaron Lun
