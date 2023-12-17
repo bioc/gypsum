@@ -2,7 +2,7 @@
 % Please edit documentation in R/fetchMetadataSchema.R
 \name{fetchMetadataSchema}
 \alias{fetchMetadataSchema}
-\title{Fetch one of the known metadata schemas}
+\title{Fetch a metadata schema}
 \usage{
 fetchMetadataSchema(
   name = "bioconductor",
@@ -11,7 +11,9 @@ fetchMetadataSchema(
 )
 }
 \arguments{
-\item{name}{String containing the name of the database.}
+\item{name}{String containing the name of the schema.
+This can be the name of any JSON schema file in \url{https://github.com/ArtifactDB/gypsum-to-sqlite/tree/master/schemas},
+after removing the \code{.json} suffix.}
 
 \item{cache}{String containing the cache directory.
 If \code{NULL}, no caching is performed.}
@@ -22,9 +24,10 @@ If \code{NULL}, no caching is performed.}
 String containing a path to the downloaded schema.
 }
 \description{
-Fetch the JSON metadata schema for one of the known database indices.
-These indices are generated from the files uploaded to the gypsum backend,
-so clients planning to become part of these indices should validate their metadata against the indices' expectations.
+Fetch a JSON schema file for metadata to be inserted into a SQLite database
+(see \url{https://github.com/ArtifactDB/gypsum-to-sqlite}).
+Each SQLite database is created from metadata files uploaded to the gypsum backend,
+so clients uploading objects to be incorporated into the database should validate their metadata against the corresponding JSON schema.
 }
 \examples{
 fetchMetadataSchema()

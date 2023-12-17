@@ -1,10 +1,13 @@
-#' Fetch one of the known metadata schemas
+#' Fetch a metadata schema
 #'
-#' Fetch the JSON metadata schema for one of the known database indices.
-#' These indices are generated from the files uploaded to the gypsum backend,
-#' so clients planning to become part of these indices should validate their metadata against the indices' expectations.
+#' Fetch a JSON schema file for metadata to be inserted into a SQLite database
+#' (see \url{https://github.com/ArtifactDB/gypsum-to-sqlite}).
+#' Each SQLite database is created from metadata files uploaded to the gypsum backend,
+#' so clients uploading objects to be incorporated into the database should validate their metadata against the corresponding JSON schema.
 #'
-#' @param name String containing the name of the database.
+#' @param name String containing the name of the schema.
+#' This can be the name of any JSON schema file in \url{https://github.com/ArtifactDB/gypsum-to-sqlite/tree/master/schemas},
+#' after removing the \code{.json} suffix.
 #' @param cache String containing the cache directory.
 #' If \code{NULL}, no caching is performed.
 #' @param overwrite Logical scalar indicating whether to overwrite an existing file in \code{cache}, if one is present.
@@ -34,10 +37,7 @@ fetchMetadataSchema <- function(name="bioconductor", cache=cacheDirectory(), ove
         }
     }
 
-    name <- match.arg(name)
-    if (name == "bioconductor") {
-        url <- "https://raw.githubusercontent.com/ArtifactDB/gypsum-bioc-index/master/schemas/bioconductor.json"
-    }
+    url <- paste0("https://raw.githubusercontent.com/ArtifactDB/gypsum-to-sqlite/master/schemas/", name, ".json")
 
     flck <- lock(paste0(cache.path, ".LOCK"))
     on.exit(unlock(flck))
