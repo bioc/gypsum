@@ -129,11 +129,9 @@ list_for_prefix <- function(prefix, config) {
     out[!startsWith(out, "..")]
 }
 
-fragment_path <- function(x) {
-    output <- character(0)
-    while (x != "." && x != "/") {
-        output <- c(basename(x), output)
-        x <- dirname(x)
+sanitize_path <- function(x) {
+    if (.Platform$OS.type == "windows") {
+        x <- gsub("\\", "/", x)
     }
-    output
+    gsub("//+", "/", x)
 }

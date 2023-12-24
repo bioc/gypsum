@@ -46,7 +46,6 @@
 #' prepareDirectoryUpload(tmp)
 #'
 #' @export
-#' @importFrom utils head tail
 prepareDirectoryUpload <- function(directory, links=c("auto", "always", "never"), cache=cacheDirectory()) {
     links <- match.arg(links)
 
@@ -60,20 +59,20 @@ prepareDirectoryUpload <- function(directory, links=c("auto", "always", "never")
         to.path=character(0)
     )
 
-    cache.components <- fragment_path(cache)
-    N <- length(cache.components)
+    # We sanitize all paths so that we can use exact string matching
+    # without worrying about whether \ or / is the file separator.
+    cache <- sanitize_path(cache)
+    if (!endsWith(cache, "/")) {
+        cache <- paste0(cache, "/")
+    }
 
     for (x in out) {
-        x.components <- fragment_path(x)
-        if (any(startsWith(x.components, ".."))) {
-            next
-        }
-
         dest <- Sys.readlink(file.path(directory, x))
         if (dest == "") {
             out.files <- c(out.files, x)
             next
         }
+
         if (links == "never") {
             if (!file.exists(dest)) {
                 stop("cannot use a dangling link to '", dest, "' as a regular upload")
@@ -82,24 +81,44 @@ prepareDirectoryUpload <- function(directory, links=c("auto", "always", "never")
             next
         }
 
-        dest.components <- fragment_path(dest)
-
-        # +4L as we need CACHE_BUCKET_NAME/project/asset/version
-        if (length(dest.components) > N + 4L && identical(head(dest.components, N), cache.components)) {
+        dest <- sanitize_path(dest)
+        dest.components <- match_path_to_cache(dest, cache)
+        if (!is.null(dest.components)) {
             out.links$from.path <- c(out.links$from.path, x)
-            out.links$to.project <- c(out.links$to.project, dest.components[N+2L])
-            out.links$to.asset <- c(out.links$to.asset, dest.components[N+3L])
-            out.links$to.version <- c(out.links$to.version, dest.components[N+4L])
-            out.links$to.path <- c(out.links$to.path, paste(tail(dest.components, -N-4L), collapse="/"))
-        } else {
-            if (links == "always") {
-                stop("failed to convert symlink '", dest, "' to an upload link")
-            } else if (!file.exists(dest)) {
-                stop("cannot use a dangling link to '", dest, "' as a regular upload")
-            }
-            out.files <- c(out.files, x)
+            out.links$to.project <- c(out.links$to.project, dest.components$project)
+            out.links$to.asset <- c(out.links$to.asset, dest.components$asset)
+            out.links$to.version <- c(out.links$to.version, dest.components$version)
+            out.links$to.path <- c(out.links$to.path, dest.components$path)
+            next
         }
+
+        if (links == "always") {
+            stop("failed to convert symlink '", dest, "' to an upload link")
+        } else if (!file.exists(dest)) {
+            stop("cannot use a dangling link to '", dest, "' as a regular upload")
+        }
+        out.files <- c(out.files, x)
     }
 
     list(files=out.files, links=do.call(data.frame, out.links))
+}
+
+#' @importFrom utils tail
+match_path_to_cache <- function(path, cache) {
+    if (!startsWith(path, cache)) {
+        return(NULL)
+    }
+
+    remainder <- substr(path, nchar(cache) + 1L, nchar(path))
+    components <- strsplit(remainder, "/")[[1]]
+    if (length(components) <= 4L || components[1] != BUCKET_CACHE_NAME) { # we need CACHE_BUCKET_NAME/project/asset/version/path
+        return(NULL)
+    }
+
+    list(
+        project=components[2], 
+        asset=components[3], 
+        version=components[4], 
+        path=paste(tail(components, -4L), collapse="/")
+    )
 }

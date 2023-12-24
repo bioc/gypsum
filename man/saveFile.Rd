@@ -22,7 +22,7 @@ saveFile(
 
 \item{version}{String containing the version name.}
 
-\item{path}{String containing the relative path to the file inside the version.}
+\item{path}{String containing the relative path to the file inside the versioned asset.}
 
 \item{cache}{String containing the path to the cache directory.}
 

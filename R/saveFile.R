@@ -5,7 +5,7 @@
 #' @param project String containing the project name.
 #' @param asset String containing the asset name.
 #' @param version String containing the version name.
-#' @param path String containing the relative path to the file inside the version.
+#' @param path String containing the relative path to the file inside the versioned asset.
 #' @param cache String containing the path to the cache directory.
 #' @param precheck Whether to check if the file exists in the bucket before attempting a download.
 #' This may be omitted if the file is known to exist.
@@ -31,8 +31,8 @@ saveFile <- function(project, asset, version, path, cache=cacheDirectory(), over
     acquire_lock(cache, project, asset, version)
     on.exit(release_lock(project, asset, version))
 
-    object <- paste0(project, "/", asset, "/", version, "/", path)
-    destination <- do.call(file.path, c(list(cache, BUCKET_CACHE_NAME, project, asset, version), split(path, "/")[[1]]))
+    object <- paste0(project, "/", asset, "/", version, "/", sanitize_path(path))
+    destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
     save_file(object, destination=destination, overwrite=overwrite, config=config, precheck=precheck)
     destination
 }

@@ -103,7 +103,7 @@ startUpload <- function(project, asset, version, files, links=NULL, deduplicate=
         }
         formatted[[i]] <- list(
             type = type,
-            path = files$path[i],
+            path = sanitize_path(files$path[i]),
             size = files$size[i],
             md5sum = files$md5sum[i]
         )
@@ -114,12 +114,12 @@ startUpload <- function(project, asset, version, files, links=NULL, deduplicate=
         for (i in seq_len(nrow(links))) {
             out.links[[i]] <- list(
                 type = "link",
-                path = links$from.path[i],
+                path = sanitize_path(links$from.path[i]),
                 link = list(
                     project = links$to.project[i],
                     asset = links$to.asset[i],
                     version = links$to.version[i],
-                    path = links$to.path[i]
+                    path = sanitize_path(links$to.path[i])
                 )
             )
         }
