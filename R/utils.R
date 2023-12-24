@@ -128,3 +128,12 @@ list_for_prefix <- function(prefix, config) {
     }
     out[!startsWith(out, "..")]
 }
+
+fragment_path <- function(x) {
+    output <- character(0)
+    while (x != "." && x != "/") {
+        output <- c(basename(x), output)
+        x <- dirname(x)
+    }
+    output
+}

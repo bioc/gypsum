@@ -53,6 +53,8 @@
 #'
 #' \code{\link{abortUpload}}, to abort an upload in progress.
 #'
+#' \code{\link{prepareDirectoryUpload}}, to create \code{files} and \code{links} from a directory.
+#'
 #' @author Aaron Lun
 #' @examples
 #' tmp <- tempfile()

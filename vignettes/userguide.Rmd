@@ -61,6 +61,8 @@ All read operations involve a publicly accessible bucket so no authentication is
 
 # Uploading files
 
+## Basic usage
+
 To demonstrate, let's say we have a directory of files that we wish to upload to the backend.
 
 ```{r}
@@ -92,8 +94,61 @@ tryCatch({
 })
 ```
 
-More advanced developers may consider using `links=` in `startUpload()` to improve efficiency by deduplicating redundant files on the **gypsum** backend.
 We can also set `concurrent=` to parallelize the uploads in `uploadFiles()`.
+
+## Link generation
+
+More advanced developers may consider using `links=` in `startUpload()` to improve efficiency by deduplicating redundant files on the **gypsum** backend.
+For example, if we wanted to link to some files in our `test-R` project, we might do:
+
+```r
+# Creates links from lun/aaron.txt ==> test-R/basic/v1/foo/bar.txt
+# and kancherla/jayaram ==> test-R/basic/v1/blah.txt
+init <- startUpload(
+    project=project_name,
+    asset=asset_name,
+    version=version_name,
+    files=character(0),
+    links=data.frame(
+        from.path=c("lun/aaron.txt", "kancherla/jayaram.txt"),
+        to.project=c("test-R", "test-R"),
+        to.asset=c("basic", "basic"),
+        to.version=c("v1", "v1"),
+        to.path=c("foo/bar.txt", "blah.txt")
+    ),
+    directory=tmp
+)
+```
+
+This functionality is particularly useful when creating new versions of existing assets.
+Only the modified files need to be uploaded, while the rest of the files can be linked to their counterparts in the previous version.
+In fact, this pattern is so common that it can be expedited via `cloneVersion()` and `prepareDirectoryUpload()`:
+
+```{r}
+dest <- tempfile()
+cloneVersion("test-R", "basic", "v1", destination=dest)
+
+# Do some modifications in 'dest' to create a new version, e.g., add a file.
+# However, users should treat symlinks as read-only - so if you want to modify
+# a file, instead delete the symlink and replace it with a new file.
+write(file=file.path(dest, "BFFs"), c("Aaron", "Jayaram"))
+
+to.upload <- prepareDirectoryUpload(dest)
+to.upload
+```
+
+Then we can just pass these values along to `startUpload()` to take advantage of the upload links:
+
+```r
+init <- startUpload(
+    project=project_name,
+    asset=asset_name,
+    version=version_name,
+    files=to.upload$files,
+    links=to.upload$links,
+    directory=dest
+)
+```
 
 # Changing permissions
 
