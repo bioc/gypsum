@@ -8,6 +8,7 @@ Description:
 Authors@R: person("Aaron", "Lun", role=c("aut", "cre"), email="infinite.monkeys.with.keyboards@gmail.com")
 License: MIT + file LICENSE
 Imports:
+    utils,
     tools,
     httr2,
     jsonlite,
