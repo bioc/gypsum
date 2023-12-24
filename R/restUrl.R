@@ -17,7 +17,7 @@
 #' restUrl(old) # setting it back.
 #' @export
 restUrl <- (function() {
-    current <- "https://gypsum-test.aaron-lun.workers.dev"
+    current <- "https://gypsum.artifactdb.com"
     function(url) {
         if (missing(url)) {
             return(current)
