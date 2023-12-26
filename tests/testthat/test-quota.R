@@ -3,7 +3,7 @@
 
 test_that("quota setting works as expected", {
     skip_if(is.na(gh_token))
-    removeProject("test-R-quota", token=gh_token)
+    removeProject("test-R-quota", asset=NULL, version=NULL, token=gh_token)
     createProject("test-R-quota", owners="LTLA", token=gh_token)
 
     setQuota("test-R-quota",

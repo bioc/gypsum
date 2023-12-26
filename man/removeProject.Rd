@@ -4,13 +4,7 @@
 \alias{removeProject}
 \title{Remove a project or its children}
 \usage{
-removeProject(
-  project,
-  asset = NULL,
-  version = NULL,
-  url = restUrl(),
-  token = accessToken()
-)
+removeProject(project, asset, version, url = restUrl(), token = accessToken())
 }
 \arguments{
 \item{project}{String containing the project to remove.}
@@ -36,7 +30,7 @@ Remove a project, an asset of the project, or a version of a particular asset.
 \examples{
 if (interactive()) {
     createProject("test-R-remove", owners="LTLA")
-    removeProject("test-R-remove")
+    removeProject("test-R-remove", asset=NULL, version=NULL)
 }
 }
 \seealso{

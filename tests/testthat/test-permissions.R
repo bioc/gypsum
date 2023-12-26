@@ -3,7 +3,7 @@
 
 test_that("permission setting works as expected", {
     skip_if(is.na(gh_token))
-    removeProject("test-R-perms", token=gh_token)
+    removeProject("test-R-perms", asset=NULL, version=NULL, token=gh_token)
     createProject("test-R-perms", owners="LTLA", token=gh_token)
 
     until <- round(Sys.time() + 1000000)

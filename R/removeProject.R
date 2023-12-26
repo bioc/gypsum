@@ -22,11 +22,11 @@
 #' @examples
 #' if (interactive()) {
 #'     createProject("test-R-remove", owners="LTLA")
-#'     removeProject("test-R-remove")
+#'     removeProject("test-R-remove", asset=NULL, version=NULL)
 #' }
 #' @export
 #' @import httr2
-removeProject <- function(project, asset=NULL, version=NULL, url=restUrl(), token=accessToken()) {
+removeProject <- function(project, asset, version, url=restUrl(), token=accessToken()) {
     url <- chomp_url(url)
 
     suffix <- uenc(project)

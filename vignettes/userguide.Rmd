@@ -276,7 +276,7 @@ refreshQuota("my-new-project", "some-asset")
 Administrators may also delete projects, assets or versions, though this should be done sparingly as it violates **gypsum**'s expectations of immutability.
 
 ```r
-removeProject("my-new_project")
+removeProject("my-new_project", asset=NULL, version=NULL)
 ```
 
 # Session information {-}
