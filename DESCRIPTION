@@ -1,6 +1,6 @@
 Package: gypsum
-Version: 0.99.0
-Date: 2024-01-25
+Version: 0.99.1
+Date: 2024-02-03
 Title: Interface to the gypsum REST API
 Description:
     Friendly interface to the gypsum REST API.
