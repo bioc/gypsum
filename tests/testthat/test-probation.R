@@ -3,7 +3,7 @@
 
 test_that('probation approval works as expected', {
     skip_if(is.na(gh_token))
-    removeProject("test-R", "probation", version=NULL, token=gh_token)
+    removeAsset("test-R", "probation", token=gh_token)
 
     # Mocking up a versioned asset.
     init <- startUpload(
@@ -26,7 +26,7 @@ test_that('probation approval works as expected', {
 
 test_that('probation rejection works as expected', {
     skip_if(is.na(gh_token))
-    removeProject("test-R", "probation", version=NULL, token=gh_token)
+    removeAsset("test-R", "probation", token=gh_token)
 
     # Mocking up a versioned asset.
     init <- startUpload(

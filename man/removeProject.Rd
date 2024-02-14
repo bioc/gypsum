@@ -2,19 +2,12 @@
 % Please edit documentation in R/removeProject.R
 \name{removeProject}
 \alias{removeProject}
-\title{Remove a project or its children}
+\title{Remove a project}
 \usage{
-removeProject(project, asset, version, url = restUrl(), token = accessToken())
+removeProject(project, url = restUrl(), token = accessToken())
 }
 \arguments{
 \item{project}{String containing the project to remove.}
-
-\item{asset}{String containing the asset to remove.
-If \code{NULL}, all assets of the \code{project} are removed.}
-
-\item{version}{String containing the version of the asset to remove.
-If \code{NULL}, all versions of the specified \code{asset} are removed.
-Ignored if \code{asset=NULL}.}
 
 \item{url}{String containing the URL of the gypsum REST API.}
 
@@ -22,19 +15,21 @@ Ignored if \code{asset=NULL}.}
 The token must refer to a gypsum administrator account.}
 }
 \value{
-\code{NULL} is invisibly returned if the project or its contents was successfully removed.
+\code{NULL} is invisibly returned if the project was successfully removed.
 }
 \description{
-Remove a project, an asset of the project, or a version of a particular asset.
+Remove a project from the gypsum backend.
 }
 \examples{
 if (interactive()) {
     createProject("test-R-remove", owners="LTLA")
-    removeProject("test-R-remove", asset=NULL, version=NULL)
+    removeProject("test-R-remove")
 }
 }
 \seealso{
 \code{\link{createProject}}, to create a project.
+
+\code{\link{removeAsset}} and \code{\link{removeVersion}}, to remove an asset or version.
 }
 \author{
 Aaron Lun

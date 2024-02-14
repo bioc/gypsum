@@ -3,7 +3,7 @@
 
 test_that("upload sequence works as expected for regular files", {
     skip_if(is.na(gh_token))
-    removeProject("test-R", asset="upload", version=NULL, token=gh_token)
+    removeAsset("test-R", asset="upload", token=gh_token)
 
     tmp <- tempfile()
     dir.create(tmp)
@@ -53,7 +53,7 @@ test_that("upload sequence works as expected for regular files", {
 
 test_that("upload sequence works as expected for links", {
     skip_if(is.na(gh_token))
-    removeProject("test-R", asset="upload", version=NULL, token=gh_token)
+    removeAsset("test-R", asset="upload", token=gh_token)
 
     tmp <- tempfile()
     dir.create(tmp)
@@ -87,7 +87,7 @@ test_that("upload sequence works as expected for links", {
 
 test_that("aborting the upload works correctly", {
     skip_if(is.na(gh_token))
-    removeProject("test-R", asset="upload", version=NULL, token=gh_token)
+    removeAsset("test-R", asset="upload", token=gh_token)
 
     init <- startUpload(
         project="test-R", 
