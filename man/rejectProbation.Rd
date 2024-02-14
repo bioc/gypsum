@@ -49,7 +49,7 @@ if (interactive()) {
 
 }
 \seealso{
-\code{\link{rejectProbation}}, to approve the probational upload.
+\code{\link{approveProbation}}, to approve the probational upload.
 
 \code{\link{startUpload}}, to specify probational uploads.
 }

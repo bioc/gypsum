@@ -15,6 +15,11 @@
 #' 
 #' @return The file is downloaded to the local file system. The destination file path is returned.
 #'
+#' @details
+#' Unlike \code{\link{saveVersion}}, this function will \emph{not} resolve any links, so \code{path} must actually be present in the bucket.
+#' Users should inspect the manifest (or link files) to determine if \code{path} is a linked-from path,
+#' then call \code{saveFile} on the link target to obtain the file.
+#'
 #' @author Aaron Lun
 #' 
 #' @seealso

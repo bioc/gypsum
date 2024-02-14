@@ -40,6 +40,11 @@ The file is downloaded to the local file system. The destination file path is re
 \description{
 Download a file from the gypsum bucket, for a version of an asset of a project.
 }
+\details{
+Unlike \code{\link{saveVersion}}, this function will \emph{not} resolve any links, so \code{path} must actually be present in the bucket.
+Users should inspect the manifest (or link files) to determine if \code{path} is a linked-from path,
+then call \code{saveFile} on the link target to obtain the file.
+}
 \examples{
 out <- saveFile("test-R", "basic", "v1", "blah.txt")
 readLines(out)

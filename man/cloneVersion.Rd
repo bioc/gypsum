@@ -43,17 +43,21 @@ Clone the directory structure for a versioned asset into a separate location.
 This is typically used to prepare a new version for a lightweight upload.
 }
 \details{
-Cloning involves creating a directory at \code{destination} that has the same structure as the version.
-All files in the version are represented as symlinks from \code{destination} to the corresponding file in the \code{cache}. 
+Cloning of a versioned asset involves creating a directory at \code{destination} that has the same contents as the corresponding project-asset-version directory.
+All files in the specified version are represented as symlinks from \code{destination} to the corresponding file in the \code{cache}. 
 The idea is that, when \code{destination} is used in \code{\link{prepareDirectoryUpload}}, 
 the symlinks are converted into upload links, i.e., \code{links=} in \code{\link{startUpload}}.
 This allows users to create new versions very cheaply as duplicate files are not uploaded to/stored in the backend.
 
-Users can more-or-less do whatever they want inside the cloned \code{destination}, but they should treat the symlinks as read-only.
+Users can more-or-less do whatever they want inside the cloned \code{destination}, but they should treat the symlink targets as read-only.
 That is, they should not modify the contents of the linked-to file, as these refer to assumed-immutable files in the \code{cache}.
-Indeed, they might not refer to any files at all if \code{download=FALSE}, in which case the symlinks may be dangling.
 If a file in \code{destination} needs to be modified, the symlink should be deleted and replaced with an actual file;
 this avoids mutating the \code{cache} and it ensures that \code{\link{prepareDirectoryUpload}} recognizes that a new file actually needs to be uploaded.
+
+Advanced users can set \code{download=FALSE}, in which case symlinks are created even if their targets are not present in \code{cache}.
+In such cases, \code{destination} should be treated as write-only due to the potential presence of dangling symlinks.
+This mode is useful for uploading a new version of an asset without downloading the files from the existing version,
+assuming that the modifications associated with the former can be achieved without reading any of the latter.
 }
 \examples{
 tmp <- tempfile()
