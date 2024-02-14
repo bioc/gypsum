@@ -33,7 +33,7 @@ blob <- startUpload(
 )
 completeUpload(blob)
 
-# Uploading a third version with implicit links that must be recursively resolved.
+# Uploading a third version with implicit links to the ancestral v1.
 blob <- startUpload(
     project="test-R", 
     asset="basic", 

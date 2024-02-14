@@ -43,39 +43,16 @@ resolveLinks <- function(project, asset, version, cache=cacheDirectory(), overwr
         }
         linkdata <- entry$link
 
-        while (TRUE) {
-            key <- paste(linkdata$project, linkdata$asset, linkdata$version, sep="/")
-            if (is.null(manifests[[key]])) {
-                curmanifest <- fetchManifest(linkdata$project, linkdata$asset, linkdata$version, cache=cache, config=config)
-                manifests[[key]] <- curmanifest
-            } else {
-                curmanifest <- manifests[[key]]
-            }
+        if (!is.null(linkdata$ancestor)) {
+            linkdata <- linkdata$ancestor
+        }
+        out <- saveFile(linkdata$project, linkdata$asset, linkdata$version, linkdata$path, cache=cache, config=config, overwrite=overwrite)
 
-            target <- curmanifest[[linkdata$path]]
-            if (is.null(target)) {
-                stop("cannot find '", linkdata$path, "' in manifest for '", key, "'")
-            }
-
-            nextlinkdata <- target$link
-            if (is.null(nextlinkdata)) {
-                # Too tedious to try to parallelize, so we'll just go in one by one.
-                out <- saveFile(linkdata$project, linkdata$asset, linkdata$version, linkdata$path, cache=cache, config=config, overwrite=overwrite)
-
-                for (old in oldloc) {
-                    oldpath <- file.path(cache, BUCKET_CACHE_NAME, old)
-                    unlink(oldpath, force=TRUE) # remove any existing file.
-                    dir.create(dirname(oldpath), showWarnings=FALSE, recursive=TRUE)
-                    if (!file.link(out, oldpath) && !file.copy(out, oldpath)) {
-                        stop("failed to resolve link for '", l, "'")
-                    }
-                }
-
-                break
-            }
-
-            oldloc <- c(oldloc, file.path(linkdata$project, linkdata$asset, linkdata$version, linkdata$path))
-            linkdata <- nextlinkdata
+        oldpath <- file.path(cache, BUCKET_CACHE_NAME, oldloc)
+        unlink(oldpath, force=TRUE) # remove any existing file.
+        dir.create(dirname(oldpath), showWarnings=FALSE, recursive=TRUE)
+        if (!file.link(out, oldpath) && !file.copy(out, oldpath)) {
+            stop("failed to resolve link for '", l, "'")
         }
     }
 

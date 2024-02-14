@@ -51,8 +51,8 @@ test_that("saveVersion works as expected with links", {
     out <- saveVersion("test-R", "basic", "v2", cache=cache)
     expect_identical(readLines(file.path(out, "blah.txt")), blah_contents)
     expect_identical(readLines(file.path(out, "foo", "bar.txt")), foobar_contents)
-    expect_true(file.exists(file.path(out, "blah.txt"))) # populates the previous versions as well.
-    expect_true(file.exists(file.path(out, "foo", "bar.txt")))
+    expect_true(file.exists(file.path(cache, gypsum:::BUCKET_CACHE_NAME, "test-R", "basic", "v1", "blah.txt"))) # populates the linked-to files as well.
+    expect_true(file.exists(file.path(cache, gypsum:::BUCKET_CACHE_NAME, "test-R", "basic", "v1", "foo", "bar.txt"))) 
 
     # Unless we turn off link resolution.
     cache <- tempfile()
@@ -65,10 +65,8 @@ test_that("saveVersion works as expected with links", {
     out <- saveVersion("test-R", "basic", "v3", cache=cache)
     expect_identical(readLines(file.path(out, "blah.txt")), blah_contents)
     expect_identical(readLines(file.path(out, "foo", "bar.txt")), foobar_contents)
-    expect_true(file.exists(file.path(out, "blah.txt"))) # populates the previous versions as well.
-    expect_true(file.exists(file.path(out, "foo", "bar.txt")))
-    expect_true(file.exists(file.path(out, "blah.txt")))
-    expect_true(file.exists(file.path(out, "foo", "bar.txt")))
+    expect_true(file.exists(file.path(cache, gypsum:::BUCKET_CACHE_NAME, "test-R", "basic", "v1", "blah.txt"))) # populates the ancestral versions as well.
+    expect_true(file.exists(file.path(cache, gypsum:::BUCKET_CACHE_NAME, "test-R", "basic", "v1", "foo", "bar.txt"))) 
 
     # Link resolver doesn't do more work if it's already present.
     path <- file.path(out, "foo", "bar.txt")
