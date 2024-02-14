@@ -1,6 +1,6 @@
 Package: gypsum
-Version: 0.99.1
-Date: 2024-02-03
+Version: 0.99.2
+Date: 2024-02-13
 Title: Interface to the gypsum REST API
 Description:
     Friendly interface to the gypsum REST API.
@@ -22,7 +22,7 @@ Suggests:
     BiocStyle,
     digest,
     jsonvalidate
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 URL: https://github.com/ArtifactDB/gypsum-R
 BugReports: https://github.com/ArtifactDB/gypsum-R/issues
