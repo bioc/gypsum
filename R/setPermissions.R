@@ -39,7 +39,7 @@ setPermissions <- function(project, owners=NULL, uploaders=NULL, append=TRUE, ur
 
     perms <- list()
     if (append) {
-        old.perms <- fetchPermissions(project)
+        old.perms <- fetchPermissions(project, config=publicS3Config(url=url))
         if (!is.null(owners)) {
             perms$owners <- as.list(union(unlist(old.perms$owners), owners))
         }
