@@ -17,3 +17,17 @@ test_that("listProjects works as expected", {
     projects <- listProjects()
     expect_true("test-R" %in% projects)
 })
+
+test_that("listFiles works as expected", {
+    in.basic <- listFiles("test-R", "basic", "v1")
+    expect_identical(sort(in.basic), sort(c("..summary", "..manifest", "blah.txt", "foo/bar.txt")))
+
+    in.basic <- listFiles("test-R", "basic", "v2")
+    expect_identical(sort(in.basic), sort(c("..summary", "..manifest", "..links", "foo/..links")))
+
+    in.basic <- listFiles("test-R", "basic", "v1", prefix="foo/")
+    expect_identical(sort(in.basic), sort(c("foo/bar.txt")))
+
+    in.basic <- listFiles("test-R", "basic", "v1", prefix="..")
+    expect_identical(sort(in.basic), sort(c("..summary", "..manifest")))
+})
