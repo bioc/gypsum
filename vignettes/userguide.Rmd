@@ -4,7 +4,7 @@ author:
 - name: Aaron Lun
   email: infinite.monkeys.with.keyboards@gmail.com
 package: gypsum
-date: "Revised: December 5, 2023"
+date: "Revised: February 15, 2023"
 output:
   BiocStyle::html_document
 vignette: >
@@ -98,7 +98,7 @@ We can also set `concurrent=` to parallelize the uploads in `uploadFiles()`.
 
 ## Link generation
 
-More advanced developers may consider using `links=` in `startUpload()` to improve efficiency by deduplicating redundant files on the **gypsum** backend.
+More advanced developers can use `links=` in `startUpload()` to improve efficiency by deduplicating redundant files on the **gypsum** backend.
 For example, if we wanted to link to some files in our `test-R` project, we might do:
 
 ```r
@@ -163,14 +163,16 @@ Owners can add more uploaders (or owners) via the `setPermissions()` function.
 Uploaders can be scoped to individual assets or versions, and an expiry date may be attached to each authorization:
 
 ```r
-setPermissions("test-R", uploaders=list(
-    list(
-        id="jkanche", 
-        until=Sys.time() + 24 * 60 * 60,
-        asset="jays-happy-fun-time",
-        version="1"
+setPermissions("test-R", 
+    uploaders=list(
+        list(
+            id="jkanche", 
+            until=Sys.time() + 24 * 60 * 60,
+            asset="jays-happy-fun-time",
+            version="1"
+        )
     )
-))
+)
 ```
 
 Organizations may also be added in the permissions, in which case the authorization extends to all members of that organization.
@@ -265,18 +267,18 @@ setQuota("my-new-project",
 )
 ```
 
-They can manually refresh the latest version for an asset, and the quota usage for a project.
-This is required on very rare occasions where there are simultaneous uploads to the same project.
+They can manually refresh the latest version for an asset and the quota usage for a project.
+This is only required on very rare occasions where there are simultaneous uploads to the same project.
 
 ```r
 refreshLatest("test-R", "basic")
-refreshQuota("my-new-project", "some-asset")
+refreshUsage("test-R")
 ```
 
 Administrators may also delete projects, assets or versions, though this should be done sparingly as it violates **gypsum**'s expectations of immutability.
 
 ```r
-removeProject("my-new_project", asset=NULL, version=NULL)
+removeProject("my-new_project")
 ```
 
 # Session information {-}
