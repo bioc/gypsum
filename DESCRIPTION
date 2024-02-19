@@ -1,10 +1,11 @@
 Package: gypsum
-Version: 0.99.2
-Date: 2024-02-13
+Version: 0.99.3
+Date: 2024-02-19
 Title: Interface to the gypsum REST API
 Description:
-    Friendly interface to the gypsum REST API.
-    Provides functions for uploads, downloads, and various adminstrative and management tasks.
+    Client for the gypsum REST API (https://gypsum.artifactdb.com), a cloud-based file store in the ArtifactDB ecosystem.
+    This package provides functions for uploads, downloads, and various adminstrative and management tasks.
+    Here is a third sentence to keep BiocCheck happy.
 Authors@R: person("Aaron", "Lun", role=c("aut", "cre"), email="infinite.monkeys.with.keyboards@gmail.com")
 License: MIT + file LICENSE
 Imports:
