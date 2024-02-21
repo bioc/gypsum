@@ -5,15 +5,14 @@
 \title{Fetch a metadata schema}
 \usage{
 fetchMetadataSchema(
-  name = "bioconductor",
+  name = "bioconductor/v1.json",
   cache = cacheDirectory(),
   overwrite = FALSE
 )
 }
 \arguments{
 \item{name}{String containing the name of the schema.
-This can be the name of any JSON schema file in \url{https://github.com/ArtifactDB/gypsum-to-sqlite/tree/master/schemas},
-after removing the \code{.json} suffix.}
+This can be the name of any JSON schema file published at \url{https://github.com/ArtifactDB/bioconductor-metadata-index}.}
 
 \item{cache}{String containing the cache directory.
 If \code{NULL}, no caching is performed.}
@@ -25,7 +24,7 @@ String containing a path to the downloaded schema.
 }
 \description{
 Fetch a JSON schema file for metadata to be inserted into a SQLite database
-(see \url{https://github.com/ArtifactDB/gypsum-to-sqlite}).
+(see \url{https://github.com/ArtifactDB/bioconductor-metadata-index}).
 Each SQLite database is created from metadata files uploaded to the gypsum backend,
 so clients uploading objects to be incorporated into the database should validate their metadata against the corresponding JSON schema.
 }

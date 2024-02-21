@@ -216,8 +216,7 @@ Databases can operate downstream of the **gypsum** backend to create performant 
 `r self` provides some utilities to check that metadata follows the JSON schema of some known downstream databases.
 
 ```{r}
-# Fetching for the gypsum-Bioconductor database
-schema <- fetchMetadataSchema("bioconductor")
+schema <- fetchMetadataSchema()
 cat(head(readLines(schema)), sep="\n")
 ```
 
