@@ -30,7 +30,7 @@ saveFile(
 If \code{FALSE} and the file exists in \code{cache}, the download is skipped.}
 
 \item{precheck}{Whether to check if the file exists in the bucket before attempting a download.
-This may be omitted if the file is known to exist.}
+This may be skipped if the file is known to exist.}
 
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }
@@ -41,9 +41,9 @@ The file is downloaded to the local file system. The destination file path is re
 Download a file from the gypsum bucket, for a version of an asset of a project.
 }
 \details{
-Unlike \code{\link{saveVersion}}, this function will \emph{not} resolve any links, so \code{path} must actually be present in the bucket.
-Users should inspect the manifest (or link files) to determine if \code{path} is a linked-from path,
-then call \code{saveFile} on the link target to obtain the file.
+If \code{precheck=TRUE} and no file exists in the bucket at \code{path}, 
+this function will check the \code{..links} file to check whether \code{path} refers to a linked-from file.
+If so, the contents of the link destination is downloaded to the cache and a link/copy is created at the returned file path.
 }
 \examples{
 out <- saveFile("test-R", "basic", "v1", "blah.txt")

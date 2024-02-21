@@ -54,18 +54,24 @@ get_file <- function(path, config, precheck) {
 }
 
 #' @importFrom aws.s3 save_object object_exists
-save_file <- function(path, destination, overwrite, config, precheck) {
+save_file <- function(path, destination, overwrite, config, precheck, error=TRUE) {
     if (overwrite || !file.exists(destination)) {
         dir.create(dirname(destination), recursive=TRUE, showWarnings=FALSE)
 
         args <- create_arguments(path, config)
         if (precheck && !do.call(object_exists, args)) {
-            stop("'", path, "' does not exist in the bucket")
+            if (error) {
+                stop("'", path, "' does not exist in the bucket")
+            }
+            return(FALSE)
         }
+
         args$file <- destination
         args$parse_response <- FALSE
         do.call(save_object, args)
     }
+
+    return(TRUE)
 }
 
 BUCKET_CACHE_NAME <- 'bucket'

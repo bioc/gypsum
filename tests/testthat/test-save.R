@@ -21,6 +21,22 @@ test_that("saveFile works as expected", {
     expect_error(saveFile("test-R", "basic", "v1", "no.exist.txt", cache=cache), "does not exist")
 })
 
+test_that("saveFile works via links", {
+    cache <- tempfile()
+    out <- saveFile("test-R", "basic", "v2", "blah.txt", cache=cache)
+    expect_identical(readLines(out), blah_contents)
+
+    out <- saveFile("test-R", "basic", "v2", "foo/bar.txt", cache=cache)
+    expect_identical(readLines(out), foobar_contents)
+
+    # Pulling out some ancestors.
+    out <- saveFile("test-R", "basic", "v3", "blah.txt", cache=cache)
+    expect_identical(readLines(out), blah_contents)
+
+    out <- saveFile("test-R", "basic", "v3", "foo/bar.txt", cache=cache)
+    expect_identical(readLines(out), foobar_contents)
+})
+
 test_that("saveVersion works as expected without links", {
     cache <- tempfile()
     out <- saveVersion("test-R", "basic", "v1", cache=cache)

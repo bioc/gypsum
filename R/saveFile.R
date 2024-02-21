@@ -8,7 +8,7 @@
 #' @param path String containing the relative path to the file inside the versioned asset.
 #' @param cache String containing the path to the cache directory.
 #' @param precheck Whether to check if the file exists in the bucket before attempting a download.
-#' This may be omitted if the file is known to exist.
+#' This may be skipped if the file is known to exist.
 #' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
 #' @param overwrite Logical scalar indicating whether to overwrite an existing file in \code{cache}.
 #' If \code{FALSE} and the file exists in \code{cache}, the download is skipped.
@@ -16,9 +16,9 @@
 #' @return The file is downloaded to the local file system. The destination file path is returned.
 #'
 #' @details
-#' Unlike \code{\link{saveVersion}}, this function will \emph{not} resolve any links, so \code{path} must actually be present in the bucket.
-#' Users should inspect the manifest (or link files) to determine if \code{path} is a linked-from path,
-#' then call \code{saveFile} on the link target to obtain the file.
+#' If \code{precheck=TRUE} and no file exists in the bucket at \code{path}, 
+#' this function will check the \code{..links} file to check whether \code{path} refers to a linked-from file.
+#' If so, the contents of the link destination is downloaded to the cache and a link/copy is created at the returned file path.
 #'
 #' @author Aaron Lun
 #' 
@@ -38,6 +38,48 @@ saveFile <- function(project, asset, version, path, cache=cacheDirectory(), over
 
     object <- paste0(project, "/", asset, "/", version, "/", sanitize_path(path))
     destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
-    save_file(object, destination=destination, overwrite=overwrite, config=config, precheck=precheck)
+    found <- save_file(object, destination, overwrite=overwrite, config=config, precheck=precheck, error=FALSE)
+
+    if (!found) {
+        link <- resolve_single_link(project, asset, version, path, cache, overwrite=overwrite, config=config)
+        if (is.null(link)) {
+            stop("'", path, "' does not exist in the bucket")
+        }
+        if (!file.link(link, destination) && !file.copy(link, destination)) {
+            stop("failed to resolve link for '", path, "'")
+        }
+    }
+
     destination
+}
+
+#' @importFrom jsonlite fromJSON
+resolve_single_link <- function(project, asset, version, path, cache, overwrite, config) {
+    if (grepl("/", path)) {
+        lpath <- paste0(sub("/[^/]+$", "", path), "/..links")
+    } else {
+        lpath <- "..links"
+    }
+
+    lobject <- paste0(project, "/", asset, "/", version, "/", lpath)
+    ldestination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, lpath)
+    if (!save_file(lobject, ldestination, overwrite=overwrite, config=config, precheck=TRUE, error=FALSE)) {
+        return(NULL)
+    }
+
+    link.info <- fromJSON(ldestination, simplifyVector=FALSE)
+    base <- sub(".*/", "", path)
+    if (!(base %in% names(link.info))) {
+        return(NULL)
+    }
+
+    target <- link.info[[base]]
+    if ("ancestor" %in% names(target)) {
+        target <- target[["ancestor"]]
+    }
+
+    tobject <- paste0(target$project, "/", target$asset, "/", target$version, "/", target$path)
+    tdestination <- file.path(cache, BUCKET_CACHE_NAME, target$project, target$asset, target$version, target$path)
+    save_file(tobject, tdestination, overwrite=overwrite, config=config, precheck=TRUE)
+    return(tdestination)
 }
