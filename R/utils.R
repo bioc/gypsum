@@ -66,9 +66,16 @@ save_file <- function(path, destination, overwrite, config, precheck, error=TRUE
             return(FALSE)
         }
 
-        args$file <- destination
+        tmp <- tempfile()
+        args$file <- tmp
         args$parse_response <- FALSE
         do.call(save_object, args)
+
+        # We use a write-and-rename approach to avoid problems with interrupted
+        # downloads that make it seem as if the cache is populated.
+        if (!file.rename(tmp, destination) && !file.copy(tmp, destination)) {
+            stop("cannot move temporary file for '", path, "' to its destination '", destination, "'")
+        }
     }
 
     return(TRUE)
