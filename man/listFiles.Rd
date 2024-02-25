@@ -20,11 +20,11 @@ listFiles(
 
 \item{version}{String containing the version name.}
 
-\item{prefix}{String containing the prefix for the path.
-If provided, files are only listed if they have a relative path (i.e., inside the version subdirectory) that starts with this prefix.
-If \code{NULL}, all files associated with this version are listed.}
+\item{prefix}{String containing the remaining prefix for the object key.
+If provided, a file is only listed if its object key starts with \code{{project}/{asset}/{version}/{prefix}}.
+If \code{NULL}, all files associated with this version of the asset are listed.}
 
-\item{include..}{Logical scalar indicating whether to list files with path components that start with \code{..}.}
+\item{include..}{Logical scalar indicating whether to list files with \code{/..} in their object keys.}
 
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }
@@ -32,7 +32,7 @@ If \code{NULL}, all files associated with this version are listed.}
 Character vector of relative paths of files associated with the versioned asset.
 }
 \description{
-List the contents of a version of a project asset.
+List files belonging to a version of a project asset.
 }
 \examples{
 listFiles("test-R", "basic", "v1")

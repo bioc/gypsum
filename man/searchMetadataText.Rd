@@ -39,7 +39,9 @@ If \code{TRUE}, the wildcards are preserved during tokenization.}
 For \code{searchMetadataText}, a data frame specifying the contaning the search results.
 \itemize{
 \item The \code{project}, \code{asset} and \code{version} columns contain the identity of the version with matching metadata.
-\item The \code{path} column contains the path to the metadata document within the version prefix.
+\item The \code{path} column contains the suffix of the object key of the metadata document,
+i.e., the relative \dQuote{path} within the version's \dQuote{directory} to the metadata document.
+The full object key of the document is defined as \code{{project}/{asset}/{version}/{path}}.
 \item If \code{include.metadata=TRUE}, a \code{metadata} column is present with the nested metadata for each match.
 \item If \code{latest=TRUE}, a \code{latest} column is present indicating whether the matching version is the latest for its asset.
 Otherwise, only the latest version is returned.

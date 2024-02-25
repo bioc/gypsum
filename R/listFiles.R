@@ -1,14 +1,14 @@
 #' List files for a version
 #'
-#' List the contents of a version of a project asset.
+#' List files belonging to a version of a project asset.
 #'
 #' @param project String containing the project name.
 #' @param asset String containing the asset name.
 #' @param version String containing the version name.
-#' @param prefix String containing the prefix for the path.
-#' If provided, files are only listed if they have a relative path (i.e., inside the version subdirectory) that starts with this prefix.
-#' If \code{NULL}, all files associated with this version are listed.
-#' @param include.. Logical scalar indicating whether to list files with path components that start with \code{..}.
+#' @param prefix String containing the remaining prefix for the object key.
+#' If provided, a file is only listed if its object key starts with \code{{project}/{asset}/{version}/{prefix}}.
+#' If \code{NULL}, all files associated with this version of the asset are listed.
+#' @param include.. Logical scalar indicating whether to list files with \code{/..} in their object keys.
 #' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
 #'
 #' @author Aaron Lun

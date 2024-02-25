@@ -5,7 +5,9 @@
 #' @param project String containing the project name.
 #' @param asset String containing the asset name.
 #' @param version String containing the version name.
-#' @param path String containing the relative path to the file inside the versioned asset.
+#' @param path String containing the suffix of the object key for the file of interest,
+#' i.e., the relative \dQuote{path} inside the version's \dQuote{subdirectory}.
+#' The full object key is defined as \code{{project}/{asset}/{version}/{path}}.
 #' @param cache String containing the path to the cache directory.
 #' @param precheck Whether to check if the file exists in the bucket before attempting a download.
 #' This may be skipped if the file is known to exist.
@@ -16,7 +18,8 @@
 #' @return The file is downloaded to the local file system. The destination file path is returned.
 #'
 #' @details
-#' If \code{precheck=TRUE} and no file exists in the bucket at \code{path}, 
+#' The full object key is defined as \code{{project}/{asset}/{version}/{path}}.
+#' If \code{precheck=TRUE} and no file exists in the project-asset-version combination at \code{path}, 
 #' this function will check the \code{..links} file to check whether \code{path} refers to a linked-from file.
 #' If so, the contents of the link destination is downloaded to the cache and a link/copy is created at the returned file path.
 #'
