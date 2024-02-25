@@ -59,9 +59,7 @@ prepareDirectoryUpload <- function(directory, links=c("auto", "always", "never")
         to.path=character(0)
     )
 
-    # We sanitize all paths so that we can use exact string matching
-    # without worrying about whether \ or / is the file separator.
-    cache <- sanitize_path(cache)
+    cache <- normalize_and_sanitize_path(cache)
     if (!endsWith(cache, "/")) {
         cache <- paste0(cache, "/")
     }
@@ -81,7 +79,7 @@ prepareDirectoryUpload <- function(directory, links=c("auto", "always", "never")
             next
         }
 
-        dest <- sanitize_path(dest)
+        dest <- normalize_and_sanitize_path(dest)
         dest.components <- match_path_to_cache(dest, cache)
         if (!is.null(dest.components)) {
             out.links$from.path <- c(out.links$from.path, x)
@@ -101,6 +99,22 @@ prepareDirectoryUpload <- function(directory, links=c("auto", "always", "never")
     }
 
     list(files=out.files, links=do.call(data.frame, out.links))
+}
+
+normalize_and_sanitize_path <- function(path) {
+    # We normalize the paths so that we can compare prefixes accurately; but
+    # don't attempt normalization if the path doesn't exist, e.g., because it's
+    # the destination of a dangling symlink.
+    if (file.exists(path)) {
+        # We only normalize the directory, not the basename, in order to avoid
+        # resolution if 'path' is itself a symlink. This preserves the intended
+        # symlink target instead of following links to the ancestor.
+        path <- file.path(normalizePath(dirname(path), mustWork=TRUE), basename(path))
+    }
+
+    # We sanitize all paths so that we can use exact string matching
+    # without worrying about whether \ or / is the file separator.
+    sanitize_path(path)
 }
 
 #' @importFrom utils tail

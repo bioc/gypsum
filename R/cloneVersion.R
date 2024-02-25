@@ -62,6 +62,10 @@ cloneVersion <- function(project, asset, version, destination, download=TRUE, ca
     listing <- fetchManifest(project, asset, version, cache=cache, config=config)
     dir.create(destination)
 
+    # Only run this after the manifest has been fetched,
+    # as this guarantees that the cache exists.
+    final.cache <- normalizePath(final.cache, mustWork=TRUE)
+
     # Create symlinks back to the cache.
     for (x in names(listing)) {
         dpath <- file.path(destination, x)
