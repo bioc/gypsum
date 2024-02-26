@@ -13,7 +13,6 @@
 #' listAssets("test-R")
 #' 
 #' @export
-#' @importFrom aws.s3 get_bucket
 listAssets <- function(project, config=publicS3Config()) {
     list_for_prefix(paste0(project, "/"), config=config)
 }

@@ -14,7 +14,6 @@
 #' listVersions("test-R", "basic")
 #' 
 #' @export
-#' @importFrom aws.s3 get_bucket
 listVersions <- function(project, asset, config=publicS3Config()) {
     list_for_prefix(paste0(project, "/", asset, "/"), config)
 }

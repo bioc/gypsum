@@ -19,7 +19,6 @@
 #' listFiles("test-R", "basic", "v1")
 #' 
 #' @export
-#' @importFrom aws.s3 get_bucket
 listFiles <- function(project, asset, version, prefix=NULL, include..=TRUE, config=publicS3Config()) {
     actual.prefix <- paste(project, asset, version, "", sep="/") # empty string to force trailing slash.
     truncator <- nchar(actual.prefix) + 1L
