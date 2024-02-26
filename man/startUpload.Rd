@@ -20,9 +20,11 @@ startUpload(
 \arguments{
 \item{project}{String containing the project name.}
 
-\item{asset}{String containing the asset name.}
+\item{asset}{String containing the asset name.
+This should not contain \code{/} or start with \code{..}.}
 
-\item{version}{String containing the version name.}
+\item{version}{String containing the version name.
+This should not contain \code{/} or start with \code{..}.}
 
 \item{files}{Character vector containing the paths of the files to be uploaded.
 These should be relative to the version's \code{directory}. 

@@ -4,7 +4,9 @@
 #'
 #' @param project String containing the project name.
 #' @param asset String containing the asset name.
+#' This should not contain \code{/} or start with \code{..}.
 #' @param version String containing the version name.
+#' This should not contain \code{/} or start with \code{..}.
 #' @param files Character vector containing the paths of the files to be uploaded.
 #' These should be relative to the version's \code{directory}. 
 #'

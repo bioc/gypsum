@@ -102,3 +102,20 @@ test_that("aborting the upload works correctly", {
     abortUpload(init)
     expect_false("upload" %in% listAssets("test-R"))
 })
+
+test_that("upload directory works as expected", {
+    skip_if(is.na(gh_token))
+    removeAsset("test-R", asset="upload-dir", token=gh_token)
+
+    tmp <- tempfile()
+    dir.create(tmp)
+    write(file=file.path(tmp, "blah.txt"), LETTERS)
+    dir.create(file.path(tmp, "foo"))
+    write(file=file.path(tmp, "foo", "bar.txt"), 1:10)
+    uploadDirectory(tmp, "test-R", "upload-dir", version="1", token=gh_token)
+
+    # Checking that the files were, in fact, correctly uploaded.
+    man <- fetchManifest("test-R", "upload-dir", "1", cache=NULL)
+    expect_identical(sort(names(man)), c("blah.txt", "foo/bar.txt"))
+    expect_false(any(vapply(man, function(x) !is.null(x$link), TRUE)))
+})
