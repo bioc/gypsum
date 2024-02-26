@@ -38,6 +38,12 @@ test_that("publicS3Config caches as expected", {
     # ... unless we force a refresh.
     reout <- publicS3Config(refresh=TRUE, cache=cache)
     expect_true(file.exists(disked))
+
+    # Works without any caching.
+    uout <- publicS3Config(cache=NULL)
+    expect_type(out$endpoint, "character")
+    reuout <- publicS3Config(cache=NULL)
+    expect_identical(uout, reuout)
 })
 
 test_that("URL chomper works as expected", {

@@ -1,4 +1,5 @@
 creds.env <- new.env()
+creds.env$uncached <- NULL
 creds.env$info <- list()
 
 config_cache_path <- function(cache) {
@@ -37,22 +38,29 @@ config_cache_path <- function(cache) {
 #' @importFrom jsonlite fromJSON
 publicS3Config <- function(refresh = FALSE, url=restUrl(), cache=cacheDirectory()) {
     if (!refresh) {
-        # We use 'cache'-specific credentials here, so that the behavior of the
-        # in-memory cache is consistent with the behavior of the on-disk cache
-        # at 'cache'. I suppose this is useful just in case people have
-        # different cache locations for different 'url' calls.
-        creds <- creds.env$info[[cache]]
-        if (!is.null(creds)) {
-            return(creds)
-        }
-
-        config.path <- config_cache_path(cache)
-        if (file.exists(config.path)) {
-            # Only using these configuration parameters if they are less than a week old. 
-            if (Sys.time() - file.info(config.path)$ctime <= 7) {
-                creds <- fromJSON(config.path, simplifyVector=FALSE)
-                creds.env$info[[cache]] <- creds
+        if (is.null(cache)) {
+            creds <- creds.env$uncached
+            if (!is.null(creds)) {
                 return(creds)
+            }
+        } else {
+            # We use 'cache'-specific credentials here, so that the behavior of the
+            # in-memory cache is consistent with the behavior of the on-disk cache
+            # at 'cache'. I suppose this is useful just in case people have
+            # different cache locations for different 'url' calls.
+            creds <- creds.env$info[[cache]]
+            if (!is.null(creds)) {
+                return(creds)
+            }
+
+            config.path <- config_cache_path(cache)
+            if (file.exists(config.path)) {
+                # Only using these configuration parameters if they are less than a week old. 
+                if (Sys.time() - file.info(config.path)$ctime <= 7) {
+                    creds <- fromJSON(config.path, simplifyVector=FALSE)
+                    creds.env$info[[cache]] <- creds
+                    return(creds)
+                }
             }
         }
     }
@@ -60,13 +68,17 @@ publicS3Config <- function(refresh = FALSE, url=restUrl(), cache=cacheDirectory(
     req <- request(paste0(url, "/credentials/s3-api"))
     res <- req_perform(req)
     creds <- resp_body_json(res)
-    creds.env$info[[cache]] <- creds
 
-    config.path <- config_cache_path(cache)
-    dir.create(dirname(config.path), showWarnings=FALSE, recursive=TRUE)
-    lck <- lock(paste0(config.path, ".LOCK"))
-    on.exit(unlock(lck))
-    write(file=config.path, toJSON(creds, auto_unbox=TRUE))
+    if (is.null(cache)) {
+        creds.env$uncached <- creds
+    } else {
+        creds.env$info[[cache]] <- creds
+        config.path <- config_cache_path(cache)
+        dir.create(dirname(config.path), showWarnings=FALSE, recursive=TRUE)
+        lck <- lock(paste0(config.path, ".LOCK"))
+        on.exit(unlock(lck))
+        write(file=config.path, toJSON(creds, auto_unbox=TRUE))
+    }
 
     creds
 }
