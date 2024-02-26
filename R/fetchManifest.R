@@ -23,7 +23,7 @@
 #' fetchManifest("test-R", "basic", "v1")
 #' 
 #' @export
-fetchManifest <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {
+fetchManifest <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config(cache=cache)) {
     get_cacheable_json(
        project, 
        asset, 

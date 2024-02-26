@@ -19,7 +19,7 @@
 #' fetchSummary("test-R", "basic", "v1")
 #' 
 #' @export
-fetchSummary <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {
+fetchSummary <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config(cache=cache)) {
     out <- get_cacheable_json(
         project, 
         asset, 

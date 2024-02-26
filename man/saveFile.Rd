@@ -12,7 +12,7 @@ saveFile(
   cache = cacheDirectory(),
   overwrite = FALSE,
   precheck = TRUE,
-  config = publicS3Config()
+  config = publicS3Config(cache = cache)
 )
 }
 \arguments{

@@ -53,7 +53,7 @@
 #' # Symlinks are converted to upload links:
 #' prepareDirectoryUpload(tmp)
 #' @export
-cloneVersion <- function(project, asset, version, destination, download=TRUE, cache=cacheDirectory(), config=publicS3Config(), ...) {
+cloneVersion <- function(project, asset, version, destination, download=TRUE, cache=cacheDirectory(), config=publicS3Config(cache=cache), ...) {
     if (download) {
         saveVersion(project, asset, version, cache=cache, config=config, ...)
     }

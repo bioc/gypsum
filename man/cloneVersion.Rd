@@ -11,7 +11,7 @@ cloneVersion(
   destination,
   download = TRUE,
   cache = cacheDirectory(),
-  config = publicS3Config(),
+  config = publicS3Config(cache = cache),
   ...
 )
 }

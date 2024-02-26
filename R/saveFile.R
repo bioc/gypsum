@@ -35,7 +35,7 @@
 #' readLines(out)
 #' 
 #' @export
-saveFile <- function(project, asset, version, path, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config()) {
+saveFile <- function(project, asset, version, path, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config(cache=cache)) {
     acquire_lock(cache, project, asset, version)
     on.exit(release_lock(project, asset, version))
 

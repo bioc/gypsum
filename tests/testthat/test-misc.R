@@ -15,6 +15,31 @@ test_that("cacheDirectory works as expected", {
     expect_identical(old, cacheDirectory())
 })
 
+test_that("publicS3Config caches as expected", {
+    cache <- tempfile()
+    out <- publicS3Config(cache=cache)
+    expect_type(out$endpoint, "character")
+    disked <- file.path(cache, "credentials", "s3.json")
+    expect_true(file.exists(disked))
+
+    # Reloads from disk perfectly well.
+    cache2 <- tempfile()
+    dir.create(file.path(cache2, "credentials"), recursive=TRUE)
+    file.copy(disked, file.path(cache2, "credentials", "s3.json"))
+    out2 <- publicS3Config(cache=cache2)
+    expect_identical(out, out2)
+
+    # Subsequent requests just re-use the in-memory cache.
+    unlink(disked)
+    reout <- publicS3Config(cache=cache)
+    expect_identical(reout, out)
+    expect_false(file.exists(disked))
+
+    # ... unless we force a refresh.
+    reout <- publicS3Config(refresh=TRUE, cache=cache)
+    expect_true(file.exists(disked))
+})
+
 test_that("URL chomper works as expected", {
     expect_identical(gypsum:::chomp_url("https://asdasd.com/asdasd"), "https://asdasd.com/asdasd")
     expect_identical(gypsum:::chomp_url("https://asdasd.com/asdasd//"), "https://asdasd.com/asdasd")

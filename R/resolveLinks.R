@@ -22,7 +22,7 @@
 #' list.files(cache, recursive=TRUE, all.files=TRUE)
 #'
 #' @export
-resolveLinks <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, config=publicS3Config()) {
+resolveLinks <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, config=publicS3Config(cache=cache)) {
     acquire_lock(cache, project, asset, version)
     on.exit(release_lock(project, asset, version))
     destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)

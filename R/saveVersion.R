@@ -26,7 +26,7 @@
 #' list.files(out, recursive=TRUE, all.files=TRUE)
 #' 
 #' @export
-saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, relink=TRUE, concurrent=1, config=publicS3Config()) {
+saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, relink=TRUE, concurrent=1, config=publicS3Config(cache=cache)) {
     acquire_lock(cache, project, asset, version)
     on.exit(release_lock(project, asset, version))
     destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)

@@ -4,12 +4,14 @@
 \alias{publicS3Config}
 \title{Public S3 configuration}
 \usage{
-publicS3Config(refresh = FALSE, url = restUrl())
+publicS3Config(refresh = FALSE, url = restUrl(), cache = cacheDirectory())
 }
 \arguments{
 \item{refresh}{Logical scalar indicating whether to refresh the credentials in the in-memory cache.}
 
 \item{url}{String containing a URL to the gypsum REST API.}
+
+\item{cache}{String containing a path to the cache directory, to store the configuration across R sessions.}
 }
 \value{
 List containing:
@@ -24,8 +26,10 @@ List containing:
 Fetch S3 credentials and other configuration details for read-only access to the underlying gypsum bucket.
 }
 \details{
-The configuration is obtained through a query to \code{url} but is automatically cached in memory on first use in an R session.
-This reduces the number of network requests in read operations on the bucket.
+The configuration is obtained through a query to \code{url} on the first use of this function.
+The result is automatically cached in memory and on disk to reduce the number of network requests to the API.
+New credentials are automatically fetched if the on-disk cache is older than a week;
+this refresh can be performed manually by calling this function with \code{refresh=TRUE}.
 }
 \examples{
 publicS3Config()

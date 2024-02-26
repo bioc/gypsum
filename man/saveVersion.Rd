@@ -12,7 +12,7 @@ saveVersion(
   overwrite = FALSE,
   relink = TRUE,
   concurrent = 1,
-  config = publicS3Config()
+  config = publicS3Config(cache = cache)
 )
 }
 \arguments{

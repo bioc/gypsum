@@ -10,7 +10,7 @@ resolveLinks(
   version,
   cache = cacheDirectory(),
   overwrite = FALSE,
-  config = publicS3Config()
+  config = publicS3Config(cache = cache)
 )
 }
 \arguments{
