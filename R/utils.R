@@ -144,7 +144,7 @@ list_for_prefix <- function(prefix, config) {
 
 sanitize_path <- function(x) {
     if (.Platform$OS.type == "windows") {
-        x <- gsub("\\", "/", x)
+        x <- gsub("\\\\", "/", x)
     }
     gsub("//+", "/", x)
 }
