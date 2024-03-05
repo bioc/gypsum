@@ -133,6 +133,24 @@ test_that("searchMetadataText works with combined AND and OR searches", {
     expect_identical(out$path, c("kuroko.txt", "accelerator.txt"))
 })
 
+test_that("searchMetadataText works for NOT searches", {
+    query <- !defineTextQuery("uiharu") 
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("mikoto.txt", "mitsuko.txt", "kuroko.txt", "misaki.txt", "ruiko.txt", "accelerator.txt"))
+
+    query <- !defineTextQuery("mi%", partial=TRUE) 
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("kuroko.txt", "ruiko.txt", "kazari.txt", "accelerator.txt"))
+
+    query <- !(defineTextQuery("uiharu") | defineTextQuery("rank"))
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("mitsuko.txt", "kuroko.txt", "ruiko.txt"))
+
+    query <- defineTextQuery("rank") & !defineTextQuery("tokiwadai")
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("accelerator.txt"))
+})
+
 test_that("searchMetadataText works with ill-defined filters", {
     # We return everything.
     out <- searchMetadataText(tmp, "     ", include.metadata=FALSE, latest=FALSE)

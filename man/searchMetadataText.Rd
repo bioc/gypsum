@@ -51,7 +51,7 @@ For \code{searchMetadataTextFilter}, a list containing \code{where}, a string ca
 and \code{parameters}, the parameter bindings to be used in \code{where}.
 The return value may also be \code{NULL} if the query has no well-defined filter.
 
-For \code{defineTextQuery}, a \code{gypsum.search.clause} object that can be used in \code{|} and \code{&} to create more complex queries involving multiple text clauses.
+For \code{defineTextQuery}, a \code{gypsum.search.clause} object that can be used in \code{|}, \code{&} and \code{!} to create more complex queries involving multiple text clauses.
 }
 \description{
 Perform a text search on a SQLite database containing metadata from the gypsum backend.

@@ -33,7 +33,7 @@
 #' and \code{parameters}, the parameter bindings to be used in \code{where}.
 #' The return value may also be \code{NULL} if the query has no well-defined filter.
 #'
-#' For \code{defineTextQuery}, a \code{gypsum.search.clause} object that can be used in \code{|} and \code{&} to create more complex queries involving multiple text clauses.
+#' For \code{defineTextQuery}, a \code{gypsum.search.clause} object that can be used in \code{|}, \code{&} and \code{!} to create more complex queries involving multiple text clauses.
 #'
 #' @author Aaron Lun
 #'
@@ -117,6 +117,8 @@ Ops.gypsum.search.clause <- function(e1, e2) {
         output <- list(type="and", children=list(e1, e2))
     } else if (.Generic == "|") {
         output <- list(type="or", children=list(e1, e2))
+    } else if (.Generic == "!") {
+        output <- list(type="not", child=e1) 
     } else {
         stop("unsupported generic '", .Generic, "' for 'gypsum.search.clause'")
     }
@@ -151,6 +153,14 @@ sanitize_query <- function(query) {
     }
 
     qt <- query$type
+    if (qt == "not") {
+        child <- sanitize_query(query$child)
+        if (is.null(child)) {
+            return(NULL)
+        } 
+        return(list(type="not", child=child))
+    }
+
     if (qt != "text") {
         rechildren <- lapply(query$children, sanitize_query)
 
@@ -221,6 +231,10 @@ build_query <- function(query, name, env) {
         } else {
             return(sprintf("%s IN (SELECT pid from links LEFT JOIN tokens ON tokens.tid = links.tid WHERE %s)", name, match.str))
         }
+    }
+
+    if (qt == "not") {
+        return(paste0("NOT ", build_query(query$child, name, env)))
     }
 
     if (qt == "and") {
