@@ -19,7 +19,7 @@ and the \emph{previous} setting is invisibly returned.
 Specify the cache directory in the local filesystem for gypsum-related data.
 }
 \details{
-If the \code{GYPSUM_CACHE_DIR} environment variable is set, it is used as the initial location of the cache directory.
+If the \code{GYPSUM_CACHE_DIR} environment variable is set before the first call to \code{\link{cacheDirectory}}, it is used as the initial location of the cache directory.
 Otherwise, the initial location is based on \code{\link{R_user_dir}}.
 }
 \examples{

@@ -10,7 +10,7 @@
 #' and the \emph{previous} setting is invisibly returned.
 #'
 #' @details
-#' If the \code{GYPSUM_CACHE_DIR} environment variable is set, it is used as the initial location of the cache directory.
+#' If the \code{GYPSUM_CACHE_DIR} environment variable is set before the first call to \code{\link{cacheDirectory}}, it is used as the initial location of the cache directory.
 #' Otherwise, the initial location is based on \code{\link{R_user_dir}}. 
 #'
 #' @author Aaron Lun
@@ -25,8 +25,11 @@
 #' @import httr2
 #' @importFrom tools R_user_dir
 cacheDirectory <- (function() {
-    current <- Sys.getenv("GYPSUM_CACHE_DIR", tools::R_user_dir("gypsum", "cache"))
+    current <- NULL
     function(dir) {
+        if (is.null(current)) {
+            assign("current", Sys.getenv("GYPSUM_CACHE_DIR", R_user_dir("gypsum", "cache")), envir=parent.env(environment()))
+        }
         if (missing(dir)) {
             return(current)
         } else {
