@@ -50,6 +50,7 @@ token_cache_path <- function(cache) {
 
 #' @export
 #' @rdname accessToken
+#' @importFrom filelock lock unlock
 accessToken <- function(full = FALSE, request=TRUE, cache=cacheDirectory()) {
     if (full) {
         OFn <- identity
@@ -70,7 +71,13 @@ accessToken <- function(full = FALSE, request=TRUE, cache=cacheDirectory()) {
     if (!is.null(cache)) {
         cache.path <- token_cache_path(cache)
         if (file.exists(cache.path)) {
-            dump <- readLines(cache.path)
+            dump <- (function() {
+                # Lock inside a function to guarantee unlocking prior to a possible lock() inside setAccessToken().
+                lck <- lock(paste0(cache.path, ".LOCK"), exclusive=FALSE)
+                on.exit(unlock(lck))
+                readLines(cache.path)
+            })()
+
             exp <- as.double(dump[3])
             if (exp > Sys.time() + expiry_leeway) {
                 info <- list(token=dump[1], name=dump[2], expires=exp)
@@ -93,6 +100,7 @@ accessToken <- function(full = FALSE, request=TRUE, cache=cacheDirectory()) {
 #' @export
 #' @rdname accessToken
 #' @import httr2
+#' @importFrom filelock lock unlock
 setAccessToken <- function(token, app.url=restUrl(), app.key = NULL, app.secret = NULL, github.url="https://api.github.com", user.agent=NULL, cache=cacheDirectory()) {
     cache.path <- NULL
     if (!is.null(cache)) {
@@ -145,6 +153,8 @@ setAccessToken <- function(token, app.url=restUrl(), app.key = NULL, app.secret 
 
     if (!is.null(cache.path)) {
         dir.create(dirname(cache.path), showWarnings=FALSE, recursive=TRUE)
+        lck <- lock(paste0(cache.path, ".LOCK"))
+        on.exit(unlock(lck))
         writeLines(c(token, name, expiry), con=cache.path)
         Sys.chmod(cache.path, mode="0600") # prevent anyone else from reading this on shared file systems.
     }
