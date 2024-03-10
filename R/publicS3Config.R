@@ -36,6 +36,7 @@ config_cache_path <- function(cache) {
 #' @export
 #' @import httr2
 #' @importFrom jsonlite fromJSON
+#' @importFrom filelock lock unlock
 publicS3Config <- function(refresh = FALSE, url=restUrl(), cache=cacheDirectory()) {
     if (!refresh) {
         if (is.null(cache)) {
@@ -55,9 +56,15 @@ publicS3Config <- function(refresh = FALSE, url=restUrl(), cache=cacheDirectory(
 
             config.path <- config_cache_path(cache)
             if (file.exists(config.path)) {
+                creds <- (function() {
+                    # Lock inside a function to guarantee unlocking prior to the later lock() call.
+                    lck <- lock(paste0(config.path, ".LOCK"), exclusive=FALSE)
+                    on.exit(unlock(lck))
+                    fromJSON(config.path, simplifyVector=FALSE)
+                })()
+
                 # Only using these configuration parameters if they are less than a week old. 
-                if (Sys.time() - file.info(config.path)$ctime <= 7) {
-                    creds <- fromJSON(config.path, simplifyVector=FALSE)
+                if (difftime(Sys.time(), file.info(config.path)$ctime, units="weeks") <= 1) {
                     creds.env$info[[cache]] <- creds
                     return(creds)
                 }
