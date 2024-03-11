@@ -66,7 +66,8 @@ save_file <- function(path, destination, overwrite, config, precheck, error=TRUE
             return(FALSE)
         }
 
-        tmp <- tempfile()
+        tmp <- tempfile(tmpdir=dirname(destination))
+        on.exit(unlink(tmp))
         args$file <- tmp
         args$parse_response <- FALSE
         do.call(save_object, args)
