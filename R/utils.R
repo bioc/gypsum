@@ -66,20 +66,37 @@ save_file <- function(path, destination, overwrite, config, precheck, error=TRUE
             return(FALSE)
         }
 
+        # We use a write-and-rename approach to avoid problems with interrupted
+        # downloads that make it seem as if the cache is populated.
         tmp <- tempfile(tmpdir=dirname(destination))
         on.exit(unlink(tmp))
+
         args$file <- tmp
         args$parse_response <- FALSE
         do.call(save_object, args)
 
-        # We use a write-and-rename approach to avoid problems with interrupted
-        # downloads that make it seem as if the cache is populated.
-        if (!file.rename(tmp, destination) && !file.copy(tmp, destination)) {
-            stop("cannot move temporary file for '", path, "' to its destination '", destination, "'")
-        }
+        rename_file(tmp, destination)
     }
 
     return(TRUE)
+}
+
+rename_file <- function(src, dest) {
+    if (!file.rename(src, dest) && !file.copy(src, dest)) {
+        stop("cannot move temporary file for '", src, "' to its destination '", dest, "'")
+    }
+}
+
+#' @importFrom httr2 request req_perform
+download_and_rename_file <- function(url, dest) {
+    # Using the usual write-and-rename strategy.
+    tmp <- tempfile(tmpdir=dirname(dest))
+    on.exit(unlink(tmp), add=TRUE, after=FALSE)
+
+    req <- request(url)
+    req_perform(req, path=tmp)
+
+    rename_file(tmp, dest)
 }
 
 BUCKET_CACHE_NAME <- 'bucket'

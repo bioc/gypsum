@@ -33,18 +33,20 @@ fetchMetadataSchema <- function(name="bioconductor/v1.json", cache=cacheDirector
         dir.create(dirname(cache.path), showWarnings=FALSE, recursive=TRUE)
 
         if (file.exists(cache.path) && !overwrite) {
-            flck <- lock(paste0(cache.path, ".LOCK"), exclusive=FALSE)
-            unlock(flck)
+            # Seeing if we can return the path directly; we aquire lock to
+            # check that we're not in the middle of a download. 
+            (function() {
+                flck <- lock(paste0(cache.path, ".LOCK"), exclusive=FALSE)
+                on.exit(unlock(flck), add=TRUE, after=FALSE)
+            })()
             return(cache.path)
         }
     }
 
     url <- paste0("https://artifactdb.github.io/bioconductor-metadata-index/", name)
-
     flck <- lock(paste0(cache.path, ".LOCK"))
-    on.exit(unlock(flck))
-    req <- request(url)
-    req_perform(req, path=cache.path)
+    on.exit(unlock(flck), add=TRUE, after=FALSE)
+    download_and_rename_file(url, cache.path)
 
     cache.path
 }

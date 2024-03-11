@@ -40,11 +40,14 @@ fetchMetadataDatabase <- function(name="bioconductor.sqlite3", cache=cacheDirect
         if (file.exists(cache.path) && !overwrite) {
             # Seeing if we can acquire the lock, just to make sure that
             # no other process is downloading a new file at the same time.
-            flck <- lock(paste0(cache.path, ".LOCK"), exclusive=FALSE)
-            unlock(flck)
+            old_lastmod_raw <- (function() {
+                flck <- lock(paste0(cache.path, ".LOCK"), exclusive=FALSE)
+                on.exit(unlock(flck), add=TRUE, after=FALSE)
+                readLines(paste0(cache.path, ".modified"), warn=FALSE)
+            })()
 
             # Only returning the cached file if there haven't been any changes.
-            old_lastmod <- as.double(readLines(paste0(cache.path, ".modified"), warn=FALSE))
+            old_lastmod <- as.double(old_lastmod_raw)
             new_lastmod <- get_last_modified_date(base.url)
             if (!is.null(new_lastmod) && old_lastmod == new_lastmod) {
                 return(cache.path)
@@ -53,16 +56,10 @@ fetchMetadataDatabase <- function(name="bioconductor.sqlite3", cache=cacheDirect
     }
 
     flck <- lock(paste0(cache.path, ".LOCK"))
-    on.exit(unlock(flck))
-
-    url <- paste0(base.url, name)
-    req <- request(url)
-    req_perform(req, path=cache.path)
-
-    url <- paste0(base.url, "modified")
-    req <- request(url)
+    on.exit(unlock(flck), add=TRUE, after=FALSE)
     mod.path <- paste0(cache.path, ".modified")
-    req_perform(req, path=mod.path)
+    download_and_rename_file(paste0(base.url, "modified"), mod.path)
+    download_and_rename_file(paste0(base.url, name), cache.path)
 
     last_check$req_time <- get_current_unix_time()
     last_check$mod_time <- as.double(readLines(mod.path, warn=FALSE))
