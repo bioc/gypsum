@@ -69,7 +69,7 @@ save_file <- function(path, destination, overwrite, config, precheck, error=TRUE
         # We use a write-and-rename approach to avoid problems with interrupted
         # downloads that make it seem as if the cache is populated.
         tmp <- tempfile(tmpdir=dirname(destination))
-        on.exit(unlink(tmp))
+        on.exit(unlink(tmp), add=TRUE, after=FALSE)
 
         args$file <- tmp
         args$parse_response <- FALSE
@@ -110,7 +110,7 @@ get_cacheable_json <- function(project, asset, version, path, cache, config, ove
     } else {
         out <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
         acquire_lock(cache, project, asset, version)
-        on.exit(release_lock(project, asset, version))
+        on.exit(release_lock(project, asset, version), add=TRUE, after=FALSE)
         save_file(bucket_path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
     }
     fromJSON(out, simplifyVector=FALSE)

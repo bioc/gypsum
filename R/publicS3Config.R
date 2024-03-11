@@ -59,7 +59,7 @@ publicS3Config <- function(refresh = FALSE, url=restUrl(), cache=cacheDirectory(
                 creds <- (function() {
                     # Lock inside a function to guarantee unlocking prior to the later lock() call.
                     lck <- lock(paste0(config.path, ".LOCK"), exclusive=FALSE)
-                    on.exit(unlock(lck))
+                    on.exit(unlock(lck), add=TRUE, after=FALSE)
                     fromJSON(config.path, simplifyVector=FALSE)
                 })()
 
@@ -83,7 +83,7 @@ publicS3Config <- function(refresh = FALSE, url=restUrl(), cache=cacheDirectory(
         config.path <- config_cache_path(cache)
         dir.create(dirname(config.path), showWarnings=FALSE, recursive=TRUE)
         lck <- lock(paste0(config.path, ".LOCK"))
-        on.exit(unlock(lck))
+        on.exit(unlock(lck), add=TRUE, after=FALSE)
         write(file=config.path, toJSON(creds, auto_unbox=TRUE))
     }
 

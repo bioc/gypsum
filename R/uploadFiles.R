@@ -44,7 +44,7 @@ uploadFiles <- function(init, directory=NULL, url=restUrl(), concurrent=1) {
         lapply(init$file_urls, .upload_file, directory=directory, url=url, token=init$session_token)
     } else {
         cl <- makeCluster(concurrent)
-        on.exit(stopCluster(cl))
+        on.exit(stopCluster(cl), add=TRUE, after=FALSE)
         parLapply(cl, init$file_urls, .upload_file, directory=directory, url=url, token=init$session_token)
     }
     invisible(NULL)

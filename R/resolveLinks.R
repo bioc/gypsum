@@ -24,7 +24,7 @@
 #' @export
 resolveLinks <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, config=publicS3Config(cache=cache)) {
     acquire_lock(cache, project, asset, version)
-    on.exit(release_lock(project, asset, version))
+    on.exit(release_lock(project, asset, version), add=TRUE, after=FALSE)
     destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)
 
     manifests <- list()

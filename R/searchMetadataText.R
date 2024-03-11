@@ -74,7 +74,7 @@ searchMetadataText <- function(path, query, latest=TRUE, include.metadata=TRUE) 
     params <- where$parameters
 
     conn <- DBI::dbConnect(RSQLite::SQLite(), path)
-    on.exit(DBI::dbDisconnect(conn))
+    on.exit(DBI::dbDisconnect(conn), add=TRUE, after=FALSE)
 
     stmt <- "SELECT versions.project AS project, versions.asset AS asset, versions.version AS version, path";
     if (include.metadata) {

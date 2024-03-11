@@ -56,7 +56,7 @@ uploadDirectory <- function(directory, project, asset, version, cache=cacheDirec
             if (!success) {
                 abortUpload(blob)
             }
-        })
+        }, add=TRUE, after=FALSE)
     }
 
     uploadFiles(blob, directory=directory, url=url, concurrent=concurrent)

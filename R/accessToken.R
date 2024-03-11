@@ -74,7 +74,7 @@ accessToken <- function(full = FALSE, request=TRUE, cache=cacheDirectory()) {
             dump <- (function() {
                 # Lock inside a function to guarantee unlocking prior to a possible lock() inside setAccessToken().
                 lck <- lock(paste0(cache.path, ".LOCK"), exclusive=FALSE)
-                on.exit(unlock(lck))
+                on.exit(unlock(lck), add=TRUE, after=FALSE)
                 readLines(cache.path)
             })()
 
@@ -154,10 +154,11 @@ setAccessToken <- function(token, app.url=restUrl(), app.key = NULL, app.secret 
     if (!is.null(cache.path)) {
         dir.create(dirname(cache.path), showWarnings=FALSE, recursive=TRUE)
         lck <- lock(paste0(cache.path, ".LOCK"))
-        on.exit(unlock(lck))
+        on.exit(unlock(lck), add=TRUE, after=FALSE)
         writeLines(c(token, name, expiry), con=cache.path)
         Sys.chmod(cache.path, mode="0600") # prevent anyone else from reading this on shared file systems.
     }
+
     vals <- list(token=token, name=name, expires=expiry)
     token.cache$auth.info <- vals
     invisible(vals)

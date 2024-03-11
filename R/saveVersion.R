@@ -28,7 +28,7 @@
 #' @export
 saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwrite=FALSE, relink=TRUE, concurrent=1, config=publicS3Config(cache=cache)) {
     acquire_lock(cache, project, asset, version)
-    on.exit(release_lock(project, asset, version))
+    on.exit(release_lock(project, asset, version), add=TRUE, after=FALSE)
     destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)
 
     # If this version's directory was previously cached in its complete form, we skip it.
@@ -50,7 +50,7 @@ saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwri
             lapply(listing, FUN)
         } else {
             cl <- makeCluster(concurrent)
-            on.exit(stopCluster(cl))
+            on.exit(stopCluster(cl), add=TRUE, after=FALSE)
             parLapply(cl, listing, FUN)
         }
 

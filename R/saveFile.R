@@ -37,7 +37,7 @@
 #' @export
 saveFile <- function(project, asset, version, path, cache=cacheDirectory(), overwrite=FALSE, precheck=TRUE, config=publicS3Config(cache=cache)) {
     acquire_lock(cache, project, asset, version)
-    on.exit(release_lock(project, asset, version))
+    on.exit(release_lock(project, asset, version), add=TRUE, after=FALSE)
 
     object <- paste0(project, "/", asset, "/", version, "/", sanitize_path(path))
     destination <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
