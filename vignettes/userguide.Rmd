@@ -4,7 +4,7 @@ author:
 - name: Aaron Lun
   email: infinite.monkeys.with.keyboards@gmail.com
 package: gypsum
-date: "Revised: February 15, 2023"
+date: "Revised: April 2, 2024"
 output:
   BiocStyle::html_document
 vignette: >
@@ -15,7 +15,7 @@ vignette: >
 
 ```{r, echo=FALSE}
 library(BiocStyle)
-self <- Githubpkg("ArtifactDB/gypsum");
+self <- Biocpkg("gypsum")
 knitr::opts_chunk$set(error=FALSE, warning=FALSE, message=FALSE)
 ```
 
