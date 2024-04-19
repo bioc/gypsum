@@ -64,7 +64,7 @@ cloneVersion <- function(project, asset, version, destination, download=TRUE, ca
 
     final.cache <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version)
     listing <- fetchManifest(project, asset, version, cache=cache, config=config)
-    dir.create(destination)
+    dir.create(destination, recursive=TRUE, showWarnings=FALSE)
 
     # Only run this after the manifest has been fetched,
     # as this guarantees that the cache exists.
@@ -73,7 +73,7 @@ cloneVersion <- function(project, asset, version, destination, download=TRUE, ca
     # Create symlinks back to the cache.
     for (x in names(listing)) {
         dpath <- file.path(destination, x)
-        dir.create(dirname(dpath), showWarnings=FALSE)
+        dir.create(dirname(dpath), recursive=TRUE, showWarnings=FALSE)
         target <- file.path(final.cache, x)
         file.symlink(target, dpath)
 
