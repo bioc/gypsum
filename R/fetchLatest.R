@@ -19,7 +19,7 @@
 #' @export
 #' @importFrom jsonlite fromJSON
 fetchLatest <- function(project, asset, config=publicS3Config()) {
-    out <- get_file(paste(project, asset, "..latest", sep="/"), config=config, precheck=TRUE)
+    out <- get_file(paste(project, asset, "..latest", sep="/"), config=config) 
     msg <- rawToChar(out)
     if (grepl("^<", msg)) {
         stop(msg)

@@ -35,7 +35,7 @@
 #' @export
 #' @importFrom jsonlite fromJSON
 fetchPermissions <- function(project, config=publicS3Config()) {
-    out <- get_file(paste0(project, "/..permissions"), config=config, precheck=TRUE)
+    out <- get_file(paste0(project, "/..permissions"), config=config) 
 
     msg <- rawToChar(out)
     if (grepl("^<", msg)) {

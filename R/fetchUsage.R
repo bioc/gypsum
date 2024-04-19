@@ -18,7 +18,7 @@
 #' @export
 #' @importFrom jsonlite fromJSON
 fetchUsage <- function(project, config=publicS3Config()) {
-    out <- get_file(paste(project, "..usage", sep="/"), config=config, precheck=TRUE)
+    out <- get_file(paste(project, "..usage", sep="/"), config=config) 
     msg <- rawToChar(out)
     if (grepl("^<", msg)) {
         stop(msg)

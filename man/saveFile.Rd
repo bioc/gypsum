@@ -11,7 +11,6 @@ saveFile(
   path,
   cache = cacheDirectory(),
   overwrite = FALSE,
-  precheck = TRUE,
   config = publicS3Config(cache = cache)
 )
 }
@@ -31,9 +30,6 @@ The full object key is defined as \code{{project}/{asset}/{version}/{path}}.}
 \item{overwrite}{Logical scalar indicating whether to overwrite an existing file in \code{cache}.
 If \code{FALSE} and the file exists in \code{cache}, the download is skipped.}
 
-\item{precheck}{Whether to check if the file exists in the bucket before attempting a download.
-This may be skipped if the file is known to exist.}
-
 \item{config}{Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.}
 }
 \value{
@@ -44,7 +40,7 @@ Download a file from the gypsum bucket, for a version of an asset of a project.
 }
 \details{
 The full object key is defined as \code{{project}/{asset}/{version}/{path}}.
-If \code{precheck=TRUE} and no file exists in the project-asset-version combination at \code{path}, 
+If no file exists in the project-asset-version combination at \code{path}, 
 this function will check the \code{..links} file to check whether \code{path} refers to a linked-from file.
 If so, the contents of the link destination is downloaded to the cache and a link/copy is created at the returned file path.
 }

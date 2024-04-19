@@ -15,7 +15,7 @@ test_that("fetchManifest works as expected", {
     man <- fetchManifest("test-R", "basic", "v1", cache=cache, overwrite=TRUE)
     expect_true(length(man) > 0L)
 
-    expect_error(fetchManifest('test-R', 'basic', 'non-existent', cache=cache), "does not exist")
+    expect_error(fetchManifest('test-R', 'basic', 'non-existent', cache=cache), "failed to save")
 })
 
 test_that("fetchSummary works as expected", {
@@ -47,7 +47,7 @@ test_that("fetchSummary works as expected", {
     expect_true(xx$on_probation)
     expect_false(file.exists(sumpath))
 
-    expect_error(fetchSummary('test-R', 'basic', 'non-existent', cache=cache), "does not exist")
+    expect_error(fetchSummary('test-R', 'basic', 'non-existent', cache=cache), "failed to save")
 })
 
 test_that("fetchLatest works as expected", {

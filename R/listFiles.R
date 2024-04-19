@@ -26,17 +26,20 @@ listFiles <- function(project, asset, version, prefix=NULL, include..=TRUE, conf
         actual.prefix <- paste0(actual.prefix, prefix)
     }
 
-    listing <- get_bucket(
-        bucket=config$bucket, 
-        prefix=actual.prefix,
-        key=config$key, 
-        secret=config$secret,
-        base_url=sub("^http[s]://", "", config$endpoint), 
-        region="",
-        max=Inf
-    )
+    s <- create_s3(config)
 
-    out <- vapply(listing, function(x) substr(x$Key, truncator, nchar(x$Key)), "", USE.NAMES=FALSE)
+    token <- NULL
+    out <- character()
+    while (TRUE) {
+        listing <- s$list_objects_v2(config$bucket, Prefix=actual.prefix, ContinuationToken=token)
+        out <- c(out, unlist(lapply(listing$Contents, function(x) x$Key), use.names=FALSE))
+        if (!listing$IsTruncated) {
+            break
+        }
+        token <- listing$NextContinuationToken
+    }
+
+    out <- substr(out, truncator, nchar(out))
     if (!include..) {
         out <- out[!startsWith(out, "..") & !grepl("\\/\\.\\.", out)]
     }

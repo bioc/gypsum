@@ -33,47 +33,50 @@ sanitize_uploaders <- function(uploaders) {
     uploaders
 }
 
-create_arguments <- function(path, config) {
-    list(
-        object=path,
-        bucket=config$bucket, 
-        key=config$key, 
-        secret=config$secret, 
-        base_url=sub("^http[s]://", "", config$endpoint), 
-        region=""
+#' @importFrom paws.storage s3
+create_s3 <- function(config) {
+    s3(
+        endpoint=config$endpoint, 
+        region="auto",
+        credentials=list(
+            creds=list(
+                access_key_id=config$key, 
+                secret_access_key=config$secret
+            )
+        )
     )
 }
 
-#' @importFrom aws.s3 get_object object_exists
-get_file <- function(path, config, precheck) {
-    args <- create_arguments(path, config)
-    if (precheck && !do.call(object_exists, args)) {
-        stop("'", path, "' does not exist in the bucket")
-    }
-    do.call(get_object, args)
+get_file <- function(path, config) {
+    s <- create_s3(config)
+    tryCatch(
+        (s$get_object(config$bucket, Key=path))$Body,
+        error=function(e) stop("failed to retrieve '", path, "'; ", e$message)
+    )
 }
 
-#' @importFrom aws.s3 save_object object_exists
-save_file <- function(path, destination, overwrite, config, precheck, error=TRUE) {
+save_file <- function(path, destination, overwrite, config, error=TRUE) {
     if (overwrite || !file.exists(destination)) {
         dir.create(dirname(destination), recursive=TRUE, showWarnings=FALSE)
-
-        args <- create_arguments(path, config)
-        if (precheck && !do.call(object_exists, args)) {
-            if (error) {
-                stop("'", path, "' does not exist in the bucket")
-            }
-            return(FALSE)
-        }
+        s <- create_s3(config)
 
         # We use a write-and-rename approach to avoid problems with interrupted
         # downloads that make it seem as if the cache is populated.
         tmp <- tempfile(tmpdir=dirname(destination))
         on.exit(unlink(tmp), add=TRUE, after=FALSE)
 
-        args$file <- tmp
-        args$parse_response <- FALSE
-        do.call(save_object, args)
+        status <- tryCatch(
+            s$download_file(config$bucket, Key=path, Filename=tmp),
+            error=function(e) e$message
+        )
+
+        if (is.character(status)) {
+            if (error) {
+                stop("failed to save '", path, "'; ", status)
+            } else {
+                return(FALSE)
+            }
+        }
 
         rename_file(tmp, destination)
     }
@@ -87,7 +90,7 @@ rename_file <- function(src, dest) {
     }
 }
 
-#' @importFrom httr2 request req_perform
+#' @import httr2
 download_and_rename_file <- function(url, dest) {
     # Using the usual write-and-rename strategy.
     tmp <- tempfile(tmpdir=dirname(dest))
@@ -102,16 +105,16 @@ download_and_rename_file <- function(url, dest) {
 BUCKET_CACHE_NAME <- 'bucket'
 
 #' @importFrom jsonlite fromJSON
-get_cacheable_json <- function(project, asset, version, path, cache, config, overwrite, precheck) {
+get_cacheable_json <- function(project, asset, version, path, cache, config, overwrite) {
     bucket_path <- paste(project, asset, version, path, sep="/")
     if (is.null(cache)) {
-        out <- get_file(bucket_path, config=config, precheck=precheck)
+        out <- get_file(bucket_path, config=config) 
         out <- rawToChar(out)
     } else {
         out <- file.path(cache, BUCKET_CACHE_NAME, project, asset, version, path)
         acquire_lock(cache, project, asset, version)
         on.exit(release_lock(project, asset, version), add=TRUE, after=FALSE)
-        save_file(bucket_path, destination=out, overwrite=overwrite, config=config, precheck=precheck)
+        save_file(bucket_path, destination=out, overwrite=overwrite, config=config)
     }
     fromJSON(out, simplifyVector=FALSE)
 }
@@ -138,20 +141,20 @@ release_lock <- function(project, asset, version) {
     }
 }
 
-#' @importFrom aws.s3 get_bucket
 list_for_prefix <- function(prefix, config) {
-    listing <- get_bucket(
-        bucket=config$bucket, 
-        prefix=prefix,
-        delimiter="/",
-        key=config$key, 
-        secret=config$secret,
-        base_url=sub("^http[s]://", "", config$endpoint), 
-        region="",
-        max=Inf
-    )
+    s <- create_s3(config)
 
-    out <- attr(listing, "CommonPrefixes")
+    token <- NULL
+    out <- character()
+    while (TRUE) {
+        listing <- s$list_objects_v2(config$bucket, Prefix=prefix, Delimiter="/", ContinuationToken=token)
+        out <- c(out, unlist(listing$CommonPrefixes, use.names=FALSE))
+        if (!listing$IsTruncated) {
+            break
+        }
+        token <- listing$NextContinuationToken
+    }
+
     if (!is.null(prefix)) {
         out <- substr(out, nchar(prefix) + 1L, nchar(out) - 1L)
     } else {

@@ -20,7 +20,7 @@
 #' @export
 #' @importFrom jsonlite fromJSON
 fetchQuota <- function(project, config=publicS3Config()) {
-    out <- get_file(paste(project, "..quota", sep="/"), config=config, precheck=TRUE)
+    out <- get_file(paste(project, "..quota", sep="/"), config=config) 
     msg <- rawToChar(out)
     if (grepl("^<", msg)) {
         stop(msg)

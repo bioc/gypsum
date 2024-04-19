@@ -41,8 +41,7 @@ saveVersion <- function(project, asset, version, cache=cacheDirectory(), overwri
                 path=paste(project, asset, version, x, sep="/"), 
                 destination=file.path(destination, x), 
                 overwrite=overwrite, 
-                config=config, 
-                precheck=FALSE
+                config=config
             )
         }
 
