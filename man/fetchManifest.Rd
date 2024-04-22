@@ -36,6 +36,7 @@ The value of each element is another list with the following fields:
 \item \code{md5sum}, a string containing the hex-encoded MD5 checksum of the file.
 \item \code{link} (optional): a list specifying the link destination for a file. 
 This contains the strings \code{project}, \code{asset}, \code{version} and \code{path}.
+If the link destination is itself a link, an \code{ancestor} list will be present that specifies the final location of the file after resolving all intermediate links.
 }
 }
 \description{
