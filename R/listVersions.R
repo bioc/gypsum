@@ -4,7 +4,8 @@
 #'
 #' @param project String containing the project name.
 #' @param asset String containing the asset name.
-#' @param config Configuration object for the S3 bucket, see \code{\link{publicS3Config}} for details.
+#' @param url String containing the URL of the gypsum REST API.
+#' @param config Deprecated and ignored.
 #'
 #' @author Aaron Lun
 #'
@@ -14,6 +15,6 @@
 #' listVersions("test-R", "basic")
 #' 
 #' @export
-listVersions <- function(project, asset, config=publicS3Config()) {
-    list_for_prefix(paste0(project, "/", asset, "/"), config)
+listVersions <- function(project, asset, url=restUrl(), config=NULL) {
+    list_for_prefix(paste0(project, "/", asset, "/"), url=url)
 }
