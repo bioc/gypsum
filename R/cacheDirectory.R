@@ -22,13 +22,13 @@
 #' cacheDirectory(old) # setting it back.
 #'
 #' @export
-#' @import httr2
-#' @importFrom tools R_user_dir
+#' @importFrom rappdirs user_cache_dir
 cacheDirectory <- (function() {
     current <- NULL
     function(dir) {
         if (is.null(current)) {
-            assign("current", Sys.getenv("GYPSUM_CACHE_DIR", R_user_dir("gypsum", "cache")), envir=parent.env(environment()))
+            location <- Sys.getenv("GYPSUM_CACHE_DIR", user_cache_dir("gypsum", "ArtifactDB"))
+            assign("current", location, envir=parent.env(environment()))
         }
         if (missing(dir)) {
             return(current)

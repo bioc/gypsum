@@ -1,6 +1,6 @@
 Package: gypsum
-Version: 1.1.1
-Date: 2024-05-07
+Version: 1.1.2
+Date: 2024-05-26
 Title: Interface to the gypsum REST API
 Description:
     Client for the gypsum REST API (https://gypsum.artifactdb.com), a cloud-based file store in the ArtifactDB ecosystem.
@@ -10,11 +10,11 @@ Authors@R: person("Aaron", "Lun", role=c("aut", "cre"), email="infinite.monkeys.
 License: MIT + file LICENSE
 Imports:
     utils,
-    tools,
     httr2,
     jsonlite,
     parallel,
-    filelock
+    filelock,
+    rappdirs
 Suggests:
     knitr,
     rmarkdown,
