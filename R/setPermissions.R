@@ -63,7 +63,7 @@ setPermissions <- function(project, owners=NULL, uploaders=NULL, append=TRUE, ur
     req <- req_method(req, "PUT")
     req <- req_body_json(req, perms)
     req <- req_auth_bearer_token(req, token)
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
 
     req_perform(req)
     invisible(NULL)

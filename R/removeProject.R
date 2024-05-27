@@ -33,7 +33,7 @@ request_removal <- function(suffix, url, token) {
     req <- request(paste0(url, "/remove/", suffix))
     req <- req_method(req, "DELETE")
     req <- req_auth_bearer_token(req, token)
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
 
     req_perform(req)
     invisible(NULL)

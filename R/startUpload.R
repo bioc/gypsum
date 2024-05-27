@@ -133,7 +133,7 @@ startUpload <- function(project, asset, version, files, links=NULL, deduplicate=
     req <- req_method(req, "POST")
     req <- req_body_json(req, list(files=formatted, on_probation=probation))
     req <- req_auth_bearer_token(req, token)
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
 
     res <- req_perform(req)
     resp_body_json(res)

@@ -5,6 +5,8 @@
 \section{Version 1.2.0}{\itemize{
 \item Switch to \pkg{rappdirs} to choose the cache directory.
 This allows re-use of the cache with the equivalent Python client.
+
+\item Improve handling of unexpected errors with non-JSON bodies.
 }}
 
 \section{Version 1.0.1}{\itemize{

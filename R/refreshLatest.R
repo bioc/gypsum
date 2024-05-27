@@ -27,7 +27,7 @@ refreshLatest <- function(project, asset, url=restUrl(), token=accessToken()) {
     req <- request(paste0(url, "/refresh/latest/", uenc(project), "/", uenc(asset)))
     req <- req_method(req, "POST")
     req <- req_auth_bearer_token(req, token)
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
     resp <- req_perform(req)
     invisible(resp_body_json(resp)$version)
 }

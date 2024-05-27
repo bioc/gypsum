@@ -44,7 +44,7 @@ approveProbation <- function(project, asset, version, url=restUrl(), token=acces
     req <- request(paste0(url, "/probation/approve/", uenc(project) , "/", uenc(asset), "/", uenc(version)))
     req <- req_method(req, "POST")
     req <- req_auth_bearer_token(req, token)
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
     req_perform(req)
     invisible(NULL)
 }

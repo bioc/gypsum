@@ -40,7 +40,7 @@ abortUpload <- function(init, url=restUrl()) {
     req <- request(paste0(url, init$abort_url))
     req <- req_method(req, "POST")
     req <- req_auth_bearer_token(req, init$session_token)
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
     req_perform(req)
     invisible(NULL)
 }

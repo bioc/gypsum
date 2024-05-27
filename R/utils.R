@@ -34,9 +34,23 @@ sanitize_uploaders <- function(uploaders) {
 }
 
 #' @import httr2
+#' @importFrom jsonlite toJSON
+process_error <- function(req) {
+    req_error(req, body = function(res) {
+        if (identical(resp_content_type(res), "application/json")) {
+            payload <- resp_body_json(res)
+            if ("reason" %in% names(payload)) {
+                return(payload$reason)
+            }
+        }
+        return(resp_body_string(res))
+    })
+}
+
+#' @import httr2
 get_json <- function(path, url) {
     req <- request(paste0(url, "/file/", uenc(path)))
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
     res <- req_perform(req)
     resp_body_json(res)
 }
@@ -53,7 +67,7 @@ save_file <- function(path, destination, overwrite, url, error=TRUE) {
         status <- tryCatch(
             {
                 req <- request(paste0(url, "/file/", uenc(path)))
-                req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+                req <- process_error(req)
                 res <- req_perform(req, path=tmp)
             },
             error=function(e) e$message
@@ -134,7 +148,7 @@ list_for_prefix <- function(prefix, url) {
     }
 
     req <- request(url)
-    req <- req_error(req, body = function(res) resp_body_json(res)$reason)
+    req <- process_error(req)
     res <- req_perform(req)
     out <- unlist(resp_body_json(res))
 
