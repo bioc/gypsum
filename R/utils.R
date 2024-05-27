@@ -152,6 +152,10 @@ list_for_prefix <- function(prefix, url) {
     res <- req_perform(req)
     out <- unlist(resp_body_json(res))
 
+    if (is.null(out)) {
+        out <- character(0)
+    }
+
     out <- out[endsWith(out, "/")]
     if (!is.null(prefix)) {
         out <- substr(out, nchar(prefix) + 1L, nchar(out) - 1L)

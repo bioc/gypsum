@@ -6,6 +6,9 @@ test_that("listVersions works as expected", {
     expect_true("v1" %in% versions)
     expect_true("v2" %in% versions)
     expect_true("v3" %in% versions)
+
+    versions <- listVersions("test-R", "i-do-not-exist")
+    expect_identical(versions, character(0))
 })
 
 test_that("listAssets works as expected", {

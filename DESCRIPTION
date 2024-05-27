@@ -1,6 +1,6 @@
 Package: gypsum
-Version: 1.1.2
-Date: 2024-05-26
+Version: 1.1.3
+Date: 2024-05-27
 Title: Interface to the gypsum REST API
 Description:
     Client for the gypsum REST API (https://gypsum.artifactdb.com), a cloud-based file store in the ArtifactDB ecosystem.
