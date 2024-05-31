@@ -7,6 +7,8 @@
 This allows re-use of the cache with the equivalent Python client.
 
 \item Improve handling of unexpected errors with non-JSON bodies.
+
+\item Added the \code{unlockProject()} utility for administrators.
 }}
 
 \section{Version 1.0.1}{\itemize{
