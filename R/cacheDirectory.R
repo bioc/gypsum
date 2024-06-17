@@ -6,7 +6,7 @@
 #'
 #' @return If \code{dir} is missing, the current setting of the cache directory is returned.
 #'
-#' If \code{dir} is provided, it is used replace the current setting of the cache directory,
+#' If \code{dir} is provided, it is used to replace the current setting of the cache directory,
 #' and the \emph{previous} setting is invisibly returned.
 #'
 #' @details

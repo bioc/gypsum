@@ -6,7 +6,7 @@
 #'
 #' @return If \code{url} is missing, the current setting of the URL is returned.
 #'
-#' If \code{url} is provided, it is used replace the current setting of the URL,
+#' If \code{url} is provided, it is used to replace the current setting of the URL,
 #' and the \emph{previous} setting of the URL is invisibly returned.
 #'
 #' @author Aaron Lun
