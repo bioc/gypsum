@@ -155,6 +155,25 @@ test_that("searchMetadataText works for NOT searches", {
     expect_identical(out$path, c("accelerator.txt"))
 })
 
+test_that("searchMetadataText works for path-based searches", {
+    query <- definePathQuery(project="foo", asset="bar")
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(sort(out$path), sort(c("mikoto.txt", "mitsuko.txt", "kuroko.txt", "misaki.txt", "ruiko.txt", "kazari.txt", "accelerator.txt"))) 
+
+    query <- definePathQuery(version="2")
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("mitsuko.txt", "ruiko.txt"))
+
+    query <- definePathQuery(path="%ko_txt", partial=TRUE)
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("mitsuko.txt", "kuroko.txt", "ruiko.txt"))
+
+    # Combines with the other searches.
+    query <- definePathQuery(path="kuroko.txt") | defineTextQuery("railgun")
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("mikoto.txt", "kuroko.txt"))
+})
+
 test_that("searchMetadataText works with ill-defined filters", {
     # We return everything.
     out <- searchMetadataText(tmp, "     ", include.metadata=FALSE, latest=FALSE)
