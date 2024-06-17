@@ -5,7 +5,7 @@
 #' see \url{https://github.com/ArtifactDB/bioconductor-metadata-index} for details.
 #'
 #' @param query Character vector specifying the query to execute.
-#' Alternatively, a \code{gypsum.search.object} produced by \code{defineTextQuery}.
+#' Alternatively, a \code{gypsum.search.clause} produced by \code{defineTextQuery}.
 #' @param path String containing a path to a SQLite file, usually obtained via \code{\link{fetchMetadataDatabase}}.
 #' @param latest Logical scalar indicating whether to only search for matches within the latest version of each asset.
 #' @param include.metadata Logical scalar indicating whether metadata should be returned.
@@ -214,22 +214,33 @@ add_query_parameter <- function(env, value) {
     newname
 }
 
+add_token_search_clause <- function(query, env) {
+    nt <- add_query_parameter(env, query$text)
+    if (isTRUE(query$partial)) {
+        paste0("tokens.token LIKE :", nt) 
+    } else {
+        paste0("tokens.token = :", nt) 
+    }
+}
+
+setup_token_search_subquery_basic <- function(name, where) {
+    sprintf("%s IN (SELECT pid from links LEFT JOIN tokens ON tokens.tid = links.tid WHERE %s)", name, where)
+}
+
+setup_token_search_subquery_with_field <- function(name, where) {
+    sprintf("%s IN (SELECT pid from links LEFT JOIN tokens ON tokens.tid = links.tid LEFT JOIN fields ON fields.fid = links.fid WHERE %s)", name, where)
+}
+
 build_query <- function(query, name, env) {
     qt <- query$type
     if (qt == "text") {
-        nt <- add_query_parameter(env, query$text)
-        if (isTRUE(query$partial)) {
-            match.str <- paste0("tokens.token LIKE :", nt) 
-        } else {
-            match.str <- paste0("tokens.token = :", nt) 
-        }
-
+        match.str <- add_token_search_clause(query, env)
         field <- query$field
         if (!is.null(field)) {
             nf <- add_query_parameter(env, field)
-            return(sprintf("%s IN (SELECT pid from links LEFT JOIN tokens ON tokens.tid = links.tid LEFT JOIN fields ON fields.fid = links.fid WHERE %s AND fields.field = :%s)", name, match.str, nf))
+            return(setup_token_search_subquery_with_field(name, sprintf("fields.field = :%s AND %s", nf, match.str)))
         } else {
-            return(sprintf("%s IN (SELECT pid from links LEFT JOIN tokens ON tokens.tid = links.tid WHERE %s)", name, match.str))
+            return(setup_token_search_subquery_basic(name, match.str))
         }
     }
 
@@ -242,7 +253,7 @@ build_query <- function(query, name, env) {
         return(paste0("(", paste(out, collapse=" AND "), ")"))
     }
 
-    is.text <- vapply(query$children, function(x) query$type, "") == "text"
+    is.text <- vapply(query$children, function(x) x$type, "") == "text"
     out <- character(0)
 
     # Collapse text children into a single subquery.
@@ -252,13 +263,7 @@ build_query <- function(query, name, env) {
 
         for (i in seq_along(textual)) {
             current <- textual[[i]]
-            nt <- add_query_parameter(env, current[[1]])
-            if (isTRUE(current$partial)) {
-                match.str <- paste0("tokens.token LIKE :", nt) 
-            } else {
-                match.str <- paste0("tokens.token = :", nt) 
-            }
-
+            match.str <- add_token_search_clause(current, env)
             field <- current$field
             if (is.null(field)) {
                 textual[[i]] <- match.str
@@ -271,9 +276,9 @@ build_query <- function(query, name, env) {
 
         textual <- paste(unlist(textual), collapse=" OR ")
         if (needs.field) {
-            out <- c(out, sprintf("%s IN (SELECT pid from links LEFT JOIN tokens ON tokens.tid = links.tid LEFT JOIN fields ON fields.fid = links.fid WHERE %s)", name, textual))
+            out <- c(out, setup_token_search_subquery_with_field(name, textual))
         } else {
-            out <- c(out, sprintf("%s IN (SELECT pid from links LEFT JOIN tokens ON tokens.tid = links.tid WHERE %s)", name, textual))
+            out <- c(out, setup_token_search_subquery_basic(name, textual))
         }
     }
 

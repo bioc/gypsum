@@ -109,6 +109,10 @@ test_that("searchMetadataText works for OR searches", {
     query <- (defineTextQuery("teleport") | defineTextQuery("aerohand")) | defineTextQuery("mental")
     out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
     expect_identical(out$path, c("mitsuko.txt", "kuroko.txt", "misaki.txt"))
+
+    query <- (defineTextQuery("%sa%", field="school", partial=TRUE) | defineTextQuery("mental"))
+    out <- searchMetadataText(tmp, query, include.metadata=FALSE, latest=FALSE)
+    expect_identical(out$path, c("misaki.txt", "ruiko.txt", "kazari.txt"))
 })
 
 test_that("searchMetadataText works with combined AND and OR searches", {
