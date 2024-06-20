@@ -44,8 +44,7 @@ For \code{gsc}, the suffix of the object key of the metadata document,
 i.e., the relative \dQuote{path} to the metadata file inside the version's \dQuote{directory}.
 This may be missing as long as other arguments are supplied to \code{gsc}.}
 
-\item{query}{Character vector specifying the query to execute.
-Alternatively, a \code{gypsum.search.clause} produced by \code{gsc}.}
+\item{query}{A gypsum.search.clause object, typically produced by \code{gsc} or \code{\link{translateTextQuery}}.}
 
 \item{latest}{Logical scalar indicating whether to only search for matches within the latest version of each asset.}
 
@@ -120,21 +119,17 @@ This is based on a precomputed tokenization of all string properties in each met
 see \url{https://github.com/ArtifactDB/bioconductor-metadata-index} for details.
 }
 \details{
-Each string is tokenized by converting it to lower case and splitting it on characters that are not Unicode letters/numbers or a dash.
+Each query string is tokenized by converting it to lower case and splitting it on characters that are not Unicode letters/numbers or a dash.
 We currently do not remove diacritics so these will need to be converted to ASCII by the user. 
 If a text query involves only non-letter/number/dash characters, the filter will not be well-defined and will be ignored when constructing SQL statements.
-
-For convenience, a non-empty character vector may be used in \code{query}.
-A character vector of length 1 is treated as shorthand for a text query with default arguments in \code{gsc}.
-A character vector of length greater than 1 is treated as shorthand for an AND operation on default text queries for each of the individual strings.
+The metadata document/field is only considered to match the query string if all of the tokens can be found in that document/field (in any order).
 }
 \examples{
 path <- fetchMetadataDatabase()
-searchMetadata(path, c("mouse", "brain"), include.metadata=FALSE)
+searchMetadata(path, gsc("mouse brain"), include.metadata=FALSE)
 
 # Now for a slightly more complex query:
-is.mouse <- gsc("10090", field="taxonomy_id")
-query <- (gsc("brain") | gsc("pancreas")) & is.mouse
+query <- (gsc("brain") | gsc("pancreas")) & gsc("10090", field="taxonomy_id")
 searchMetadata(path, query, include.metadata=FALSE)
 
 # Throwing in some wildcards.
@@ -150,6 +145,8 @@ searchMetadata(path, datasets, include.metadata=FALSE)
 \code{\link{fetchMetadataDatabase}}, to download and cache the database files.
 
 \url{https://github.com/ArtifactDB/bioconductor-metadata-index}, for details on the SQLite file contents and table structure.
+
+\code{\link{translateTextQuery}}, to create a gypsum.search.clause from human-friendly syntax.
 }
 \author{
 Aaron Lun

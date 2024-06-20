@@ -56,13 +56,13 @@ tmp <- tempfile(fileext=".sqlite3")
 })()
 
 test_that("searchMetadata works for text searches", {
-    out <- searchMetadata(tmp, c("mikoto"), include.metadata=FALSE, latest=FALSE)
+    out <- searchMetadata(tmp, gsc("mikoto"), include.metadata=FALSE, latest=FALSE)
     expect_identical(out$path, "mikoto.txt")
 
     # Tokenization works correctly.
-    out <- searchMetadata(tmp, c(" kuroko "), include.metadata=FALSE, latest=FALSE)
+    out <- searchMetadata(tmp, gsc(" kuroko "), include.metadata=FALSE, latest=FALSE)
     expect_identical(out$path, c("kuroko.txt"))
-    out <- searchMetadata(tmp, c("TOKIWADAI"), include.metadata=FALSE, latest=FALSE)
+    out <- searchMetadata(tmp, gsc("TOKIWADAI"), include.metadata=FALSE, latest=FALSE)
     expect_identical(out$path, c("mikoto.txt", "mitsuko.txt", "kuroko.txt", "misaki.txt"))
 
     # Partial matching works correctly.
@@ -78,7 +78,7 @@ test_that("searchMetadata works for text searches", {
 
 test_that("searchMetadata works for AND searches", {
     # AND automatically happens upon tokenization.
-    out <- searchMetadata(tmp, c("sakugawa judgement"), include.metadata=FALSE, latest=FALSE)
+    out <- searchMetadata(tmp, gsc("sakugawa judgement"), include.metadata=FALSE, latest=FALSE)
     expect_identical(out$path, "kazari.txt")
 
     # We can also be more explicit.
@@ -186,7 +186,7 @@ test_that("searchMetadata works for non-text-based searches", {
 
 test_that("searchMetadata works with ill-defined filters", {
     # We return everything.
-    out <- searchMetadata(tmp, "     ", include.metadata=FALSE, latest=FALSE)
+    out <- searchMetadata(tmp, gsc("     "), include.metadata=FALSE, latest=FALSE)
     expect_identical(nrow(out), 7L)
 
     # Ill-defined filters are ignored in boolean operations.
@@ -200,7 +200,7 @@ test_that("searchMetadata works with ill-defined filters", {
 })
 
 test_that("searchMetadata respects the other output options", {
-    out <- searchMetadata(tmp, c("female"))
+    out <- searchMetadata(tmp, gsc("female"))
     expect_identical(out$path, c("kuroko.txt", "kazari.txt"))
     expect_identical(out$path, paste0(vapply(out$metadata, function(x) x$first_name, ""), ".txt"))
 })

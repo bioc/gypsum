@@ -20,7 +20,8 @@ The old name is now soft-deprecated.
 
 \item Renamed \code{searchMetadataTextFilter()} to \code{searchMetadataFilter()}, to reflect the more general nature of the search.
 The old name is now soft-deprecated.
-Also added arguments to support custom names/aliases for the project, asset, version and path columns.
+Added arguments to support custom names/aliases for the project, asset, version and path columns.
+Deprecated the capability for \code{query=} to accept character vectors, callers should supply a gypsum.search.clause directly.
 }}
 
 \section{Version 1.0.1}{\itemize{
