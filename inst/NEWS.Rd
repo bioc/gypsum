@@ -13,6 +13,8 @@ This allows re-use of the cache with the equivalent Python client.
 \item Renamed \code{defineTextQuery()} to \code{gsc()} (for \dQuote{gypsum search clause}) and generalized it to other fields in the SQLite file.
 Specifically, it now can filter based on the path to the metadata document, the project, asset or version names, the identity of the uploader and the timestamp of the upload.
 
+\item Added the \code{translateTextQuery()} function to convert a human-friendly search string into a gypsum.search.clause.
+
 \item Renamed \code{searchMetadataText()} to \code{searchMetadata()}, to reflect the more general nature of the search with the new \code{gsc()} function.
 The old name is now soft-deprecated.
 
